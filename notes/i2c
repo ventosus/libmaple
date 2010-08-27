@@ -1,0 +1,122 @@
+
+Maple -------------------------------------------------------------------------
+
+SoftwareI2C - The purpose of having a softi2c interface is simple for 
+	    flexibility and ease of implementation. Ideally most (i2c) 
+	    communication should be done using HardwareI2C. Because this is a 
+	    small addition to libmaple and wirish, and not the final I2C
+	    implementation, it does not conform to the wire() library interface,
+	    which provides i2c functionality to Arduino. However, none of the
+	    function names from wire are used here. That way, wire compatibility
+	    mode can be added easily in the future. 
+	    
+	    See http://arduino.cc/en/Reference/Wire for information on the
+	    i2c library used by arduino. 
+
+	    SoftwareI2C is made of two components, the first is a set of
+	    functions added to the i2c module of libmaple (in i2c.c, and i2c.h)
+	    These functions implement a very simply bit banged implementation of 
+	    i2c using arbitrary GPIO's. Because the implementation is bitbanged,
+	    only blocking communication channels can be built. The second
+	    component is a c++ class, SoftwareI2C. This provides the high level 
+	    interface to i2c. SoftwareI2C only support master mode for now. 
+	    Slave mode is relatively rare, and is much easier to support using
+	    hardware peripheral. The current implementation does not support 
+	    burst style reads and writes. 
+
+Wirish SoftwareI2C Interface:
+    SoftwareI2C():
+        Constructor function, does almost nothing. 
+	
+	While normal C++ conventions suggest the selection of the i2c parameters
+	(pins and speed) should be set in the constructor, the convention in 
+	arduino is to pre allocate the i2c object and then call 
+	SoftwareI2C.begin(params). Because preallocating the object forces the 
+	compiler to pull in the code for this module whether you use it or not,
+	its probably necessary to rethink how new features should be added to 
+	the library. (Perhaps using the preprocessor to scan for feature usage 
+	and pull them in...)
+
+    void begin(uint8 pin_scl, uint8 pin_sda):
+        Initialize an i2c object using arbitrary GPIOs as specified in the arguments pin_scl, pin_sda. 
+	
+	This pipe will run as "fast as possible," which is not very fast since 
+	this is a bit banged implementation a future version of this function 
+	should have return codes that specify if those pins are already in use. 
+	For now, this function will automatically re-configure those pins, 
+	possibly breaking whatever process might also be using them. It is up to
+	the user to avoid these conflicts. 
+    
+    int begin(uint8 pin_scl, uint8 pin_sda, int freq): 	    
+    	Initialize the i2c bus, specifying the GPIO's to use and the frequency.
+        
+	Alternatively, users can specify a target frequency for the i2c port in 
+	Hz (400KHz is standard). The system will try and add delays into the i2c
+ 	protocol to achieve this desired frequency. However, it may not be 
+	possible to hit the number exactly, so the "actual frequency" is 
+	returned when this initializer is used. 
+
+    int write(uint8 addr, uint8 data):
+        Write 'data' to the i2c device designated by the 7 bit address. 
+	
+	I2C transmissions always start with a device address specifier. This is 
+	an 8 bit address. The first 7 bits uniquely identify the device 
+	(accelerometer, display, codec, etc) and the 8th bit specifies whether a
+	read or write operation is to be performed. Following the standard of 
+	wiring, only the 7 bit bit address should be specified as the argument 
+	to this function, the 8th bit is set automatically. Thus 8 bit device 
+	addresses must be shifted right by 1 before going into this function 
+	(address should be between 0-127). The data is the 8 bit value to write.
+	The return codes for this function also follow the wire convention. 
+	    0 - success 
+	    2 - NACK of address 
+	    3 - NACK of data 
+	    4 - Other.
+
+    int read(uint8 addr):
+    	Perform an i2c read from the device whose 7 bit address is addr. 
+
+	This is equivalent to the "request data" function in Wire. Most devices 
+	have internal memory maps that can be addressed. Thus i2c read 
+	operations are often a two step process. First write the address of the 
+	register to read as the "data" field of an i2c write operation. Then 
+	call i2c read to get the data back. The return value will be:
+	   >= 0 - success, return val is the 8 bit value read from the device
+	   -2   - fail, NACK of address
+	   -4   - other failure
+
+libmaple i2c functions:
+
+typedef struct {
+	uint8 sda,
+	uint8 scl,
+	uint32 i2c_delay
+} I2CSoftPort;
+
+int i2c_soft_master_write(I2CSoftPort port, uint8 slave_addr, uint8 *wdata, uint32 wlen);
+    Perform an i2c burst-write operation.
+
+    slave_addr is the 7 bit (r/w address shifted right by 1) device address. The
+    len parameter will determine how many bytes should be sent within a single 
+    burst. The end device must support bursting in order to to use a wlen value 
+    greater than 1. The return codes are the same as the SoftwareI2C interface. 
+        >= 0 - success, return val is the number of bytes written. If more than 
+	       0 bytes are written, this value will be positive even if some of 
+	       the bytes failed to write.  
+	-2   - NACK of address 
+	-3   - NACK of data 
+	-4   - Other.
+
+int i2c soft_master_read(I2CSoftPort port, uint8 slave_addr, uint8* rdata, uint32 rlen);
+    Perform an i2c burst-read operation.
+
+    slave_addr is the 7 bit device address. It is the user's responsibility to 
+    ensure that rdata* is of the appropriate size to contain rlen bytes. The 
+    return value will be the number of bytes read or a negative number for 
+    error:
+    	 >= 0 - success, return val is the number of bytes read into rdata.
+	 -2   - fail, NACK of address
+	 -4   - other failure
+
+
+I2CSoftPort i2c_soft_create_port(uint8 sda, uint8 scl, uint32 freq);
