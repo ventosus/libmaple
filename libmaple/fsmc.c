@@ -57,8 +57,8 @@ void fsmc_sram_init_gpios(void) {
     gpio_set_mode(GPIOE, 15, GPIO_AF_OUTPUT_PP);
 
     /* Address lines... */
-    gpio_set_mode(GPIOD, 11, GPIO_AF_OUTPUT_PP);
-    gpio_set_mode(GPIOD, 12, GPIO_AF_OUTPUT_PP);
+    /* gpio_set_mode(GPIOD, 11, GPIO_AF_OUTPUT_PP); */
+    /* gpio_set_mode(GPIOD, 12, GPIO_AF_OUTPUT_PP); */
     gpio_set_mode(GPIOD, 13, GPIO_AF_OUTPUT_PP);
     gpio_set_mode(GPIOF,  0, GPIO_AF_OUTPUT_PP);
     gpio_set_mode(GPIOF,  1, GPIO_AF_OUTPUT_PP);
