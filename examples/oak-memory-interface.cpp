@@ -7,18 +7,19 @@
 #error "Sorry, this example only works on Maple Native."
 #endif
 
-#define COMM Serial2
+#define COMM SerialUSB
 
 // Start of FSMC SRAM bank 1
-static uint16 *const sram_start = (uint16*)0x60000000;
+static volatile uint16 *const sram_start = (uint16*)0x60000000;
 // Random safe address to write to in Oak's notional SRAM bank
-static uint16 *const sram_end   = (uint16*)0x60000040;
+static volatile uint16 *const sram_end   = (uint16*)0x60000040;
 
 #define DATA_MASK (~BIT(7))
 
-bool test_single_write(uint16*, const uint16, bool verbose=true);
+bool test_single_write(volatile uint16*, const uint16, bool verbose=true);
 void test_all_bits(void);
 void test_all_addresses(void);
+void test_sequential_addresses(void);
 
 void setup() {
     Serial2.begin(115200);
@@ -29,22 +30,37 @@ void setup() {
 
 void loop() {
     static int count = 0;
-    // while (!COMM.available()) {
-        // toggleLED();
-        // delay(100);
-    // }
-    // COMM.read();
-    test_all_bits();
+    while (!COMM.available()) {
+        toggleLED();
+        delay(100);
+    }
+    COMM.read();
+    test_sequential_addresses();
     count++;
     if (count % 8192 == 0) {
         COMM.println(count);
     }
-    // COMM.println("* Finished test round. Press a key to go again.");
+    COMM.println("* Finished test round. Press a key to go again.");
+}
+
+void test_sequential_addresses(void) {
+    uint16 tmp;
+    COMM.println("* Testing sequential addresses");
+    *sram_start = 0xAAAA;
+    *(sram_start + 1) = 0x5555;
+    tmp = *sram_start;
+    if (tmp != (0xAAAA & DATA_MASK)) {
+        COMM.print("* Mismatch! wrote 0xAAAA, got 0x");
+        COMM.print(tmp, HEX);
+        COMM.print(" [0x");
+        COMM.print(tmp & DATA_MASK, HEX);
+        COMM.println("]");
+    }
 }
 
 #define NBITS 16
 void test_all_bits(void) {
-    static uint16 *ptr = sram_start;
+    static volatile uint16 *ptr = sram_start;
     static uint16 vals[NBITS] = {
         0x1, 0x2, 0x4, 0x8,            // Bits 0--3
         0x10, 0x20, 0x40, 0x80,        // Bits 4--7
@@ -52,19 +68,18 @@ void test_all_bits(void) {
         0x1000, 0x2000, 0x4000, 0x8000 // Bits 12--15
     };
 
-    // COMM.print("* Testing address 0x");
-    // COMM.print((uint32)ptr, HEX);
-    // COMM.println("...");
+    COMM.print("* Testing address 0x");
+    COMM.print((uint32)ptr, HEX);
+    COMM.println("...");
 
-    // bool ok = true;
+    bool ok = true;
     for (unsigned b = 0; b < NBITS; b++) {
-        // ok = ok &&
-            test_single_write(ptr, vals[b], false);
+        ok = test_single_write(ptr, vals[b], true) && ok;
     }
 
-    // if (ok) {
-    //     COMM.println("* OK!");
-    // }
+    if (ok) {
+        COMM.println("* OK!");
+    }
 
     ptr++;
     if (ptr >= sram_end) {
@@ -72,7 +87,7 @@ void test_all_bits(void) {
     }
 }
 
-bool test_single_write(uint16 *ptr, const uint16 val, bool verbose) {
+bool test_single_write(volatile uint16 *ptr, const uint16 val, bool verbose) {
     uint16 tmp;
 
     if (verbose) {
@@ -105,7 +120,7 @@ bool test_single_write(uint16 *ptr, const uint16 val, bool verbose) {
         COMM.print(tmp, HEX);
         COMM.print(" [0x");
         COMM.print(tmp & DATA_MASK, HEX);
-        COMM.print("]");
+        COMM.println("]");
         return false;
     }
     return true;
@@ -114,7 +129,7 @@ bool test_single_write(uint16 *ptr, const uint16 val, bool verbose) {
 void test_all_addresses() {
     uint32 start, end;
     uint16 count = 0;
-    uint16 *ptr;
+    volatile uint16 *ptr;
 
     COMM.println("Now writing all memory addresses (unrolled loop)");
     start = micros();
