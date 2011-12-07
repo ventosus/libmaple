@@ -195,7 +195,7 @@ static void initSRAMChip(void) {
     regs->BCR = (FSMC_BCR_WREN | FSMC_BCR_MWID_16BITS | FSMC_BCR_MTYP_SRAM |
                  FSMC_BCR_MBKEN);
     fsmc_nor_psram_set_addset(regs, 0);
-    fsmc_nor_psram_set_datast(regs, 1);
+    fsmc_nor_psram_set_datast(regs, 3);
 }
 
 #endif
