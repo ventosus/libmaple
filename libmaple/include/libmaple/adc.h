@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2012 LeafLabs, LLC.
  * Copyright (c) 2010 Perry Hung.
+ * Copyright (c) 2013 OpenMusicKontrollers.
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -28,7 +29,8 @@
 /**
  * @file libmaple/include/libmaple/adc.h
  * @author Marti Bolivar <mbolivar@leaflabs.com>,
- *         Perry Hung <perry@leaflabs.com>
+ *         Perry Hung <perry@leaflabs.com>,
+ *				 F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief Analog-to-Digital Conversion (ADC) header.
  */
 
@@ -42,45 +44,25 @@ extern "C"{
 #include <libmaple/libmaple.h>
 #include <libmaple/bitband.h>
 #include <libmaple/rcc.h>
-/* We include the series header below, after defining the register map
- * and device structs. */
 
-/*
- * Register map
+/**
+ * TODO document
  */
+typedef struct adc_callback_data {
+	uint32 irq_flags;	
+	void *arg;
+} adc_callback_data;
 
-/** ADC register map type. */
-typedef struct adc_reg_map {
-    __io uint32 SR;             ///< Status register
-    __io uint32 CR1;            ///< Control register 1
-    __io uint32 CR2;            ///< Control register 2
-    __io uint32 SMPR1;          ///< Sample time register 1
-    __io uint32 SMPR2;          ///< Sample time register 2
-    __io uint32 JOFR1;          ///< Injected channel data offset register 1
-    __io uint32 JOFR2;          ///< Injected channel data offset register 2
-    __io uint32 JOFR3;          ///< Injected channel data offset register 3
-    __io uint32 JOFR4;          ///< Injected channel data offset register 4
-    __io uint32 HTR;            ///< Watchdog high threshold register
-    __io uint32 LTR;            ///< Watchdog low threshold register
-    __io uint32 SQR1;           ///< Regular sequence register 1
-    __io uint32 SQR2;           ///< Regular sequence register 2
-    __io uint32 SQR3;           ///< Regular sequence register 3
-    __io uint32 JSQR;           ///< Injected sequence register
-    __io uint32 JDR1;           ///< Injected data register 1
-    __io uint32 JDR2;           ///< Injected data register 2
-    __io uint32 JDR3;           ///< Injected data register 3
-    __io uint32 JDR4;           ///< Injected data register 4
-    __io uint32 DR;             ///< Regular data register
-} adc_reg_map;
+/**
+ * TODO document
+ */
+typedef struct adc_private_data {
+    void (*handler)(adc_callback_data*);
+    uint32 handler_flags;
+    adc_callback_data cb_data;
+} adc_private_data;
 
-/** ADC device type. */
-typedef struct adc_dev {
-    adc_reg_map *regs; /**< Register map */
-    rcc_clk_id clk_id; /**< RCC clock information */
-} adc_dev;
-
-/* Pull in the series header (which may need the above struct
- * definitions).
+/* Pull in the series header
  *
  * IMPORTANT: The series header must define the following:
  *
@@ -102,149 +84,161 @@ typedef struct adc_dev {
  *   2, 4, 6, or 8) must provide the same tokens as enumerators, for
  *   portability.
  */
+
 #include <series/adc.h>
-
-/*
- * Register bit definitions
- */
-
-/* Status register */
-
-#define ADC_SR_AWD_BIT                  0
-#define ADC_SR_EOC_BIT                  1
-#define ADC_SR_JEOC_BIT                 2
-#define ADC_SR_JSTRT_BIT                3
-#define ADC_SR_STRT_BIT                 4
-
-#define ADC_SR_AWD                      BIT(ADC_SR_AWD_BIT)
-#define ADC_SR_EOC                      BIT(ADC_SR_EOC_BIT)
-#define ADC_SR_JEOC                     BIT(ADC_SR_JEOC_BIT)
-#define ADC_SR_JSTRT                    BIT(ADC_SR_JSTRT_BIT)
-#define ADC_SR_STRT                     BIT(ADC_SR_STRT_BIT)
-
-/* Control register 1 */
-
-#define ADC_CR1_EOCIE_BIT               5
-#define ADC_CR1_AWDIE_BIT               6
-#define ADC_CR1_JEOCIE_BIT              7
-#define ADC_CR1_SCAN_BIT                8
-#define ADC_CR1_AWDSGL_BIT              9
-#define ADC_CR1_JAUTO_BIT               10
-#define ADC_CR1_DISCEN_BIT              11
-#define ADC_CR1_JDISCEN_BIT             12
-#define ADC_CR1_JAWDEN_BIT              22
-#define ADC_CR1_AWDEN_BIT               23
-
-#define ADC_CR1_AWDCH                   (0x1F)
-#define ADC_CR1_EOCIE                   BIT(ADC_CR1_EOCIE_BIT)
-#define ADC_CR1_AWDIE                   BIT(ADC_CR1_AWDIE_BIT)
-#define ADC_CR1_JEOCIE                  BIT(ADC_CR1_JEOCIE_BIT)
-#define ADC_CR1_SCAN                    BIT(ADC_CR1_SCAN_BIT)
-#define ADC_CR1_AWDSGL                  BIT(ADC_CR1_AWDSGL_BIT)
-#define ADC_CR1_JAUTO                   BIT(ADC_CR1_JAUTO_BIT)
-#define ADC_CR1_DISCEN                  BIT(ADC_CR1_DISCEN_BIT)
-#define ADC_CR1_JDISCEN                 BIT(ADC_CR1_JDISCEN_BIT)
-#define ADC_CR1_DISCNUM                 (0xE000)
-#define ADC_CR1_JAWDEN                  BIT(ADC_CR1_JAWDEN_BIT)
-#define ADC_CR1_AWDEN                   BIT(ADC_CR1_AWDEN_BIT)
-
-/* Control register 2 */
-
-/* Because this register varies significantly by series (e.g. some
- * bits moved and others disappeared in the F1->F2 transition), its
- * definitions are in the series headers. */
-
-/* Sample time register 1 */
-
-#define ADC_SMPR1_SMP17                 (0x7 << 21)
-#define ADC_SMPR1_SMP16                 (0x7 << 18)
-#define ADC_SMPR1_SMP15                 (0x7 << 15)
-#define ADC_SMPR1_SMP14                 (0x7 << 12)
-#define ADC_SMPR1_SMP13                 (0x7 << 9)
-#define ADC_SMPR1_SMP12                 (0x7 << 6)
-#define ADC_SMPR1_SMP11                 (0x7 << 3)
-#define ADC_SMPR1_SMP10                 0x7
-
-/* Sample time register 2 */
-
-#define ADC_SMPR2_SMP9                  (0x7 << 27)
-#define ADC_SMPR2_SMP8                  (0x7 << 24)
-#define ADC_SMPR2_SMP7                  (0x7 << 21)
-#define ADC_SMPR2_SMP6                  (0x7 << 18)
-#define ADC_SMPR2_SMP5                  (0x7 << 15)
-#define ADC_SMPR2_SMP4                  (0x7 << 12)
-#define ADC_SMPR2_SMP3                  (0x7 << 9)
-#define ADC_SMPR2_SMP2                  (0x7 << 6)
-#define ADC_SMPR2_SMP1                  (0x7 << 3)
-#define ADC_SMPR2_SMP0                  0x7
-
-/* Injected channel data offset register */
-
-#define ADC_JOFR_JOFFSET                0x3FF
-
-/* Watchdog high threshold register */
-
-#define ADC_HTR_HT                      0x3FF
-
-/* Watchdog low threshold register */
-
-#define ADC_LTR_LT                      0x3FF
-
-/* Regular sequence register 1 */
-
-#define ADC_SQR1_L                      (0x1F << 20)
-#define ADC_SQR1_SQ16                   (0x1F << 15)
-#define ADC_SQR1_SQ15                   (0x1F << 10)
-#define ADC_SQR1_SQ14                   (0x1F << 5)
-#define ADC_SQR1_SQ13                   0x1F
-
-/* Regular sequence register 2 */
-
-#define ADC_SQR2_SQ12                   (0x1F << 25)
-#define ADC_SQR2_SQ11                   (0x1F << 20)
-#define ADC_SQR2_SQ10                   (0x1F << 16)
-#define ADC_SQR2_SQ9                    (0x1F << 10)
-#define ADC_SQR2_SQ8                    (0x1F << 5)
-#define ADC_SQR2_SQ7                    0x1F
-
-/* Regular sequence register 3 */
-
-#define ADC_SQR3_SQ6                    (0x1F << 25)
-#define ADC_SQR3_SQ5                    (0x1F << 20)
-#define ADC_SQR3_SQ4                    (0x1F << 16)
-#define ADC_SQR3_SQ3                    (0x1F << 10)
-#define ADC_SQR3_SQ2                    (0x1F << 5)
-#define ADC_SQR3_SQ1                    0x1F
-
-/* Injected sequence register */
-
-#define ADC_JSQR_JL                     (0x3 << 20)
-#define ADC_JSQR_JL_1CONV               (0x0 << 20)
-#define ADC_JSQR_JL_2CONV               (0x1 << 20)
-#define ADC_JSQR_JL_3CONV               (0x2 << 20)
-#define ADC_JSQR_JL_4CONV               (0x3 << 20)
-#define ADC_JSQR_JSQ4                   (0x1F << 15)
-#define ADC_JSQR_JSQ3                   (0x1F << 10)
-#define ADC_JSQR_JSQ2                   (0x1F << 5)
-#define ADC_JSQR_JSQ1                   0x1F
-
-/* Injected data registers */
-
-#define ADC_JDR_JDATA                   0xFFFF
-
-/* Regular data register */
-
-#define ADC_DR_ADC2DATA                 (0xFFFF << 16)
-#define ADC_DR_DATA                     0xFFFF
 
 /*
  * Routines
  */
 
-void adc_init(const adc_dev *dev);
-void adc_set_extsel(const adc_dev *dev, adc_extsel_event event);
-void adc_set_sample_rate(const adc_dev *dev, adc_smp_rate smp_rate);
-uint16 adc_read(const adc_dev *dev, uint8 channel);
+extern void adc_init(const adc_dev *dev);
+
+/**
+ * @brief Set external event select for regular group
+ * @param dev ADC device
+ * @param event Event used to trigger the start of conversion.
+ * @see adc_extsel_event
+ */
+extern void adc_set_extsel(const adc_dev *dev, adc_extsel_event event);
+
+/**
+ * @brief Set the sample rate for all channels on an ADC device.
+ *
+ * Don't call this during conversion.
+ *
+ * @param dev adc device
+ * @param smp_rate sample rate to set
+ * @see adc_smp_rate
+ */
+extern void adc_set_sample_rate(const adc_dev *dev, adc_smp_rate smp_rate);
+
+/**
+ * @brief Enable scan mode for an ADC.
+ *
+ * In scan mode, the ADC converts all channels in a regular or
+ * injected sequence. After each conversion is done, the ADC
+ * automatically starts converting the next channel in the sequence.
+ *
+ * Scan mode is disabled by default.
+ *
+ * @see adc_disable_scan()
+ */
+extern void adc_enable_scan(const adc_dev *dev);
+
+/**
+ * @brief Disable scan mode for an ADC.
+ *
+ * This is the default setting.
+ *
+ * @see adc_enable_scan()
+ */
+extern void adc_disable_scan(const adc_dev *dev);
+
+/**
+ * @brief Enable continuous mode for an ADC.
+ *
+ * In this mode, the ADC will automatically perform conversions
+ * continuously until taken out of this mode or disabled.
+ *
+ * Continuous mode is disabled by default.
+ *
+ * @see adc_disable_continuous()
+ */
+extern void adc_enable_continuous(const adc_dev *dev);
+
+/**
+ * @brief Disable continuous mode for an ADC.
+ *
+ * This is the default setting.
+ *
+ * @see adc_enable_continuous()
+ */
+extern void adc_disable_continuous(const adc_dev *dev);
+
+/**
+ * @brief Set the sequence of channels to convert.
+ *
+ * This sets the (regular) sequence of up to 16 channels to convert.
+ *
+ * @param dev ADC device
+ * @param channels ADC channels to convert; these can repeat and may
+ *                 be in any order.
+ * @param len Length of `channels', from 1 to 16.
+ * @see adc_start_conv()
+ */
+extern void adc_set_conv_seq(const adc_dev *dev, const uint8 *channels, uint8 len);
+
+/**
+ * @brief Attach an interrupt handler and enable its interrupts.
+ *
+ * This function sets `handler' as the function to be called when any
+ * ADC interrupts for `dev' occur. At most one ADC interrupt handler
+ * may be attached at any time. Subsequent calls to this function will
+ * overwrite any previously attached handler.
+ *
+ * When `handler' is called, its argument will point to a struct
+ * adc_callback_data. The .irq_flags field in this struct will be a
+ * logical OR of adc_interrupt_id values encoding the reason(s) for
+ * the call. Its .arg field will be the `arg' argument to this
+ * function.
+ *
+ * The interrupt bits set in the adc_callback_data's .irq_flags will
+ * always be a subset of those set in the `interrupt_flags' argument
+ * to this function. That is, interrupts not given here in the
+ * `interrupt_flags' argument will never cause `handler' to be
+ * called. This has the effect that any enabled ADC interrupts not
+ * specified in `interrupt_flags' will be ignored.
+ *
+ * This function additionally enables the ADC interrupts specified by
+ * `interrupt_flags'.
+ *
+ * @param dev ADC device whose interrupts to attach to.
+ * @param interrupt_flags Logical or of adc_interrupt_id values
+ *                        specifying interrupts to enable.
+ * @param handler Interrupt handler to call when any interrupt in
+ *                interrupt_flags occurs.
+ * @param arg Value to store in .arg field of handler's callback data.
+ * @see enum adc_interrupt_id
+ * @see struct adc_callback_data
+ */
+extern void adc_attach_interrupt(const adc_dev *dev, uint32 interrupt_flags,
+																void (*handler)(adc_callback_data*), void *arg);
+
+/**
+ * @brief Disable ADC interrupts and detach interrupt handlers.
+ *
+ * This function disables all interrupts for `dev', and unsets any
+ * handler attached with adc_attach_interrupt().
+ *
+ * @param dev ADC device whose handler to detach.
+ */
+extern void adc_detach_interrupt(const adc_dev *dev);
+
+/**
+ * @brief Enable ADC interrupts
+ * @param dev ADC device
+ * @param interrupt_flags Logical or of adc_interrupt_id values to enable.
+ * @see adc_disable_interrupt()
+ * @see adc_attach_interrupt()
+ */
+extern void adc_enable_interrupts(const adc_dev *dev, uint32 interrupt_flags);
+
+/**
+ * @brief Disable ADC interrupts.
+ * @param dev ADC device
+ * @param interrupt_flags Logical or of adc_interrupt_id values to disable.
+ * @brief adc_enable_interrupt()
+ */
+extern void adc_disable_interrupts(const adc_dev *dev, uint32 interrupt_flags);
+
+/**
+ * @brief Perform a single synchronous software triggered conversion on a
+ *        channel.
+ * @param dev ADC device to use for reading.
+ * @param channel channel to convert
+ * @return conversion result
+ */
+extern uint16 adc_read(const adc_dev *dev, uint8 channel);
 
 /**
  * @brief Set the ADC prescaler.
@@ -292,28 +286,19 @@ extern void adc_enable_single_swstart(const adc_dev* dev);
  * @param dev ADC device.
  * @param length Regular channel sequence length, from 1 to 16.
  */
-static inline void adc_set_reg_seqlen(const adc_dev *dev, uint8 length) {
-    uint32 tmp = dev->regs->SQR1;
-    tmp &= ~ADC_SQR1_L;
-    tmp |= (length - 1) << 20;
-    dev->regs->SQR1 = tmp;
-}
+extern void adc_set_reg_seqlen(const adc_dev *dev, uint8 length);
 
 /**
  * @brief Enable an adc peripheral
  * @param dev ADC device to enable
  */
-static inline void adc_enable(const adc_dev *dev) {
-    *bb_perip(&dev->regs->CR2, ADC_CR2_ADON_BIT) = 1;
-}
+extern void adc_enable(const adc_dev *dev);
 
 /**
  * @brief Disable an ADC peripheral
  * @param dev ADC device to disable
  */
-static inline void adc_disable(const adc_dev *dev) {
-    *bb_perip(&dev->regs->CR2, ADC_CR2_ADON_BIT) = 0;
-}
+extern void adc_disable(const adc_dev *dev);
 
 /**
  * @brief Disable all ADC peripherals.
@@ -321,6 +306,11 @@ static inline void adc_disable(const adc_dev *dev) {
 static inline void adc_disable_all(void) {
     adc_foreach(adc_disable);
 }
+
+/*
+ * private
+ */
+extern void _adc_enable_dev_irq(const adc_dev *dev);
 
 #ifdef __cplusplus
 } // extern "C"
