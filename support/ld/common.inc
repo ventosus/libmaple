@@ -182,6 +182,16 @@ SECTIONS
         _end = __bss_end__;
       } > REGION_BSS
 
+		/*
+		 * .ccm
+		 */
+	  .ccm (NOLOAD) :
+			{
+				. = ALIGN(4);
+				*(.CCM)
+				. = ALIGN(4);
+			} > REGION_CCM
+
     /*
      * Debugging sections
      */

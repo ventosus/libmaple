@@ -14,6 +14,7 @@
  * use this file to use any of libmaple's memory-related hooks (like
  * where the heap should live).
  */
+
 INCLUDE mem-flash.inc
 
 /* Provide memory region aliases for common.inc */
@@ -21,6 +22,7 @@ REGION_ALIAS("REGION_TEXT", rom);
 REGION_ALIAS("REGION_DATA", ram);
 REGION_ALIAS("REGION_BSS", ram);
 REGION_ALIAS("REGION_RODATA", rom);
+REGION_ALIAS("REGION_CCM", ccm);
 
 /* Let common.inc handle the real work. */
 INCLUDE common.inc

@@ -23,13 +23,17 @@ cSRCS_$(d) += pwr.c
 cSRCS_$(d) += rcc.c
 cSRCS_$(d) += spi.c
 cSRCS_$(d) += systick.c
+ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f2 stm32f3)) # SYSCFG peripheral available only on F2, F3
+cSRCS_$(d) += syscfg.c
+endif
 cSRCS_$(d) += timer.c
+ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f1 stm32f2)) # TODO port USART to F3
 cSRCS_$(d) += usart.c
 cSRCS_$(d) += usart_private.c
+endif
 cSRCS_$(d) += util.c
 sSRCS_$(d) := exc.S
-# I2C support must be ported to F2:
-ifeq ($(MCU_SERIES),stm32f1)
+ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f1 stm32f3)) # TODO port I2C to F2
 cSRCS_$(d) += i2c.c
 endif
 

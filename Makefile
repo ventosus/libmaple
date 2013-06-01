@@ -59,10 +59,10 @@ GLOBAL_CFLAGS   := -Os -g3 -gdwarf-2 -nostdlib \
 		   -Wl,--gc-sections $(TARGET_FLAGS)
 GLOBAL_CXXFLAGS := -fno-rtti -fno-exceptions -Wall $(TARGET_FLAGS)
 GLOBAL_ASFLAGS  := -x assembler-with-cpp $(TARGET_FLAGS)
-LDFLAGS  = $(TARGET_LDFLAGS) $(TOOLCHAIN_LDFLAGS) -mcpu=cortex-m3 -mthumb \
+LDFLAGS  = $(TARGET_LDFLAGS) $(TOOLCHAIN_LDFLAGS) \
            -Xlinker --gc-sections \
-           -Xassembler --march=armv7-m -Wall
-#          -Xlinker --print-gc-sections \
+           -Xassembler -Wall
+#          -Xlinker --print-gc-sections
 
 ##
 ## Set all submodules here
