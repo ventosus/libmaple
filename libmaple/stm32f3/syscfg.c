@@ -26,8 +26,8 @@
  *****************************************************************************/
 
 /**
- * @file libmaple/stm32f2/syscfg.c
- * @author F3-Port by Hanspeter Portner <dev@open-music-kontrollers.ch>
+ * @file libmaple/stm32f3/syscfg.c
+ * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief SYSCFG routines.
  */
 
@@ -36,27 +36,8 @@
 #include <libmaple/rcc.h>
 
 void syscfg_set_mem_mode(syscfg_mem_mode mode) {
-    uint32 memrmp = SYSCFG_BASE->MEMRMP;
-    memrmp &= ~SYSCFG_MEMRMP_MEM_MODE;
+    uint32 memrmp = SYSCFG_BASE->CFGR1;
+    memrmp &= ~SYSCFG_CFGR1_MEM_MODE;
     memrmp |= (uint32)mode;
-    SYSCFG_BASE->MEMRMP = memrmp;
-}
-
-/**
- * @brief Turn on the I/O compensation cell.
- *
- * It's only safe to do this when the supply voltage is between 2.4 V
- * and 3.6 V.
- */
-void syscfg_enable_io_compensation(void) {
-    bb_peri_set_bit(&SYSCFG_BASE->CMPCR, SYSCFG_CMPCR_CMP_PD_BIT, 1);
-    while (!(SYSCFG_BASE->CMPCR & SYSCFG_CMPCR_READY))
-        ;
-}
-
-/**
- * @brief Turn off the I/O compensation cell.
- */
-void syscfg_disable_io_compensation(void) {
-    bb_peri_set_bit(&SYSCFG_BASE->CMPCR, SYSCFG_CMPCR_CMP_PD_BIT, 0);
+    SYSCFG_BASE->CFGR1 = memrmp;
 }

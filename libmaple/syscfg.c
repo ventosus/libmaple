@@ -1,7 +1,6 @@
 /******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2012 LeafLabs, LLC.
  * Copyright (c) 2013 OpenMusicKontrollers.
  *
  * Permission is hereby granted, free of charge, to any person
@@ -26,37 +25,17 @@
  *****************************************************************************/
 
 /**
- * @file libmaple/stm32f2/syscfg.c
- * @author F3-Port by Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief SYSCFG routines.
+ * @file libmaple/syscfg.c
+ * @brief System configuration controller (SYSCFG)
+ * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
+ *
+ * Availability: STM32F2, STM32F3, STM32F4.
  */
 
 #include <libmaple/syscfg.h>
-#include <libmaple/bitband.h>
 #include <libmaple/rcc.h>
 
-void syscfg_set_mem_mode(syscfg_mem_mode mode) {
-    uint32 memrmp = SYSCFG_BASE->MEMRMP;
-    memrmp &= ~SYSCFG_MEMRMP_MEM_MODE;
-    memrmp |= (uint32)mode;
-    SYSCFG_BASE->MEMRMP = memrmp;
-}
-
-/**
- * @brief Turn on the I/O compensation cell.
- *
- * It's only safe to do this when the supply voltage is between 2.4 V
- * and 3.6 V.
- */
-void syscfg_enable_io_compensation(void) {
-    bb_peri_set_bit(&SYSCFG_BASE->CMPCR, SYSCFG_CMPCR_CMP_PD_BIT, 1);
-    while (!(SYSCFG_BASE->CMPCR & SYSCFG_CMPCR_READY))
-        ;
-}
-
-/**
- * @brief Turn off the I/O compensation cell.
- */
-void syscfg_disable_io_compensation(void) {
-    bb_peri_set_bit(&SYSCFG_BASE->CMPCR, SYSCFG_CMPCR_CMP_PD_BIT, 0);
+void syscfg_init(void) {
+    rcc_clk_enable(RCC_SYSCFG);
+    rcc_reset_dev(RCC_SYSCFG);
 }

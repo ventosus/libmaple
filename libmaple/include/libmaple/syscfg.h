@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright (c) 2012 LeafLabs, LLC.
+ * Copyright (c) 2013 OpenMusicKontrollers.
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,9 +27,10 @@
 
 /**
  * @file libmaple/include/libmaple/syscfg.h
+ * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief System configuration controller (SYSCFG)
  *
- * Availability: STM32F2, STM32F4.
+ * Availability: STM32F2, STM32F3, STM32F4.
  */
 
 #ifndef _LIBMAPLE_SYSCFG_H_
@@ -38,46 +40,8 @@
 extern "C" {
 #endif
 
-#include <libmaple/libmaple_types.h>
-
-/*
- * Register map and base pointer
- */
-
-/**
- * @brief SYSCFG register map type.
- */
-typedef struct syscfg_reg_map {
-    __io uint32 MEMRMP;    /**< Memory remap register */
-    __io uint32 PMC;       /**< Peripheral mode configuration */
-    __io uint32 EXTICR[4]; /**< External interrupt configuration registers */
-    const uint32 RESERVED1;
-    const uint32 RESERVED2;
-    __io uint32 CMPCR;   /**< Compensation cell control register */
-} syscfg_reg_map;
-
-/** SYSCFG register map base pointer */
-#define SYSCFG_BASE                     ((struct syscfg_reg_map*)0x40013800)
-
-/*
- * Register bit definitions
- */
-
-/* Memory remap register */
-
-#define SYSCFG_MEMRMP_MEM_MODE           0x3
-#define SYSCFG_MEMRMP_MEM_MODE_FLASH     0x0
-#define SYSCFG_MEMRMP_MEM_MODE_SYS_FLASH 0x1
-#define SYSCFG_MEMRMP_MEM_MODE_FSMC_1    0x2
-#define SYSCFG_MEMRMP_MEM_MODE_EMB_SRAM  0x3
-
-/* Peripheral mode configuration register */
-
-#define SYSCFG_PMC_MII_RMII_SEL_BIT     23
-
-#define SYSCFG_PMC_MII_RMII_SEL         (1U << SYSCFG_PMC_MII_RMII_SEL_BIT)
-#define SYSCFG_PMC_MII_RMII_SEL_MII     (0U << SYSCFG_PMC_MII_RMII_SEL_BIT)
-#define SYSCFG_PMC_MII_RMII_SEL_RMII    (1U << SYSCFG_PMC_MII_RMII_SEL_BIT)
+#include <series/syscfg.h>
+#include <libmaple/rcc.h>
 
 /* External interrupt configuration register 1 */
 
@@ -107,24 +71,14 @@ typedef struct syscfg_reg_map {
 #define SYSCFG_EXTICR4_EXTI14           0xF00
 #define SYSCFG_EXTICR4_EXTI15           0xF000
 
-/* Compensation cell control register */
-
-#define SYSCFG_CMPCR_READY_BIT          8
-#define SYSCFG_CMPCR_CMP_PD_BIT         0
-
-#define SYSCFG_CMPCR_READY              (1U << SYSCFG_CMPCR_READY_BIT)
-#define SYSCFG_CMPCR_CMP_PD             (1U << SYSCFG_CMPCR_CMP_PD_BIT)
-#define SYSCFG_CMPCR_CMP_PD_PDWN        (0U << SYSCFG_CMPCR_CMP_PD_BIT)
-#define SYSCFG_CMPCR_CMP_PD_ENABLE      (1U << SYSCFG_CMPCR_CMP_PD_BIT)
-
 /*
  * Routines
  */
 
+/**
+ * @brief Initialize the SYSCFG peripheral.
+ */
 void syscfg_init(void);
-
-void syscfg_enable_io_compensation(void);
-void syscfg_disable_io_compensation(void);
 
 /**
  * @brief System memory mode
@@ -133,15 +87,26 @@ void syscfg_disable_io_compensation(void);
  */
 typedef enum syscfg_mem_mode {
     /** Main flash memory is mapped at 0x0. */
-    SYCFG_MEM_MODE_FLASH        = SYSCFG_MEMRMP_MEM_MODE_FLASH,
+    SYSCFG_MEM_MODE_FLASH        = 0x0,
     /** System flash (i.e. ST's baked-in bootloader) is mapped at 0x0. */
-    SYCFG_MEM_MODE_SYSTEM_FLASH = SYSCFG_MEMRMP_MEM_MODE_SYS_FLASH,
+    SYSCFG_MEM_MODE_SYSTEM_FLASH = 0x1,
     /** FSMC bank 1 (NOR/PSRAM 1 and 2) is mapped at 0x0. */
-    SYCFG_MEM_MODE_FSMC_BANK_1  = SYSCFG_MEMRMP_MEM_MODE_FSMC_1,
+    SYSCFG_MEM_MODE_FSMC_BANK_1  = 0x2,
     /** Embedded SRAM (i.e., not backup SRAM) is mapped at 0x0. */
-    SYCFG_MEM_MODE_SRAM         = SYSCFG_MEMRMP_MEM_MODE_EMB_SRAM,
+    SYSCFG_MEM_MODE_SRAM         = 0x3,
 } syscfg_mem_mode;
 
+
+/**
+ * @brief Set the memory to be mapped at address 0x00000000.
+ *
+ * This function can be used to override the BOOT pin
+ * configuration. Some restrictions apply; see your chip's reference
+ * manual for the details.
+ *
+ * @param mode Mode to set
+ * @see syscfg_mem_mode
+ */
 void syscfg_set_mem_mode(syscfg_mem_mode);
 
 #ifdef __cplusplus
