@@ -222,6 +222,7 @@ void __irq_exti1(void) {
 
 void __irq_exti2(void) {
     dispatch_single_exti(EXTI2);
+		// FIXME handle capatitive touch IRQ on F302/303
 }
 
 void __irq_exti3(void) {
