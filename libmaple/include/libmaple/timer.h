@@ -174,6 +174,15 @@ extern timer_dev *TIMER13;
 #if STM32_HAVE_TIMER(14)
 extern timer_dev *TIMER14;
 #endif
+#if STM32_HAVE_TIMER(15)
+extern timer_dev *TIMER15;
+#endif
+#if STM32_HAVE_TIMER(16)
+extern timer_dev *TIMER16;
+#endif
+#if STM32_HAVE_TIMER(17)
+extern timer_dev *TIMER17;
+#endif
 
 /*
  * Register bit definitions

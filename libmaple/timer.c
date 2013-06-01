@@ -116,6 +116,21 @@ static timer_dev timer14 = RESTRICTED_GENERAL_TIMER(14, TIMER_DIER_CC1IE_BIT);
 /** Timer 14 device (general-purpose) */
 timer_dev *TIMER14 = &timer14;
 #endif
+#if STM32_HAVE_TIMER(15)
+static timer_dev timer15 = RESTRICTED_GENERAL_TIMER(15, TIMER_DIER_TIE_BIT); //XXX
+/** Timer 15 device (general-purpose) */
+timer_dev *TIMER15 = &timer15;
+#endif
+#if STM32_HAVE_TIMER(16)
+static timer_dev timer16 = RESTRICTED_GENERAL_TIMER(16, TIMER_DIER_CC1IE_BIT); //XXX
+/** Timer 16 device (general-purpose) */
+timer_dev *TIMER16 = &timer16;
+#endif
+#if STM32_HAVE_TIMER(17)
+static timer_dev timer17 = RESTRICTED_GENERAL_TIMER(17, TIMER_DIER_CC1IE_BIT); //XXX
+/** Timer 17 device (general-purpose) */
+timer_dev *TIMER17 = &timer17;
+#endif
 
 /*
  * Routines
@@ -167,6 +182,15 @@ void timer_foreach(void (*fn)(timer_dev*)) {
 #endif
 #if STM32_HAVE_TIMER(14)
     fn(TIMER14);
+#endif
+#if STM32_HAVE_TIMER(15)
+    fn(TIMER15);
+#endif
+#if STM32_HAVE_TIMER(16)
+    fn(TIMER16);
+#endif
+#if STM32_HAVE_TIMER(17)
+    fn(TIMER17);
 #endif
 }
 
@@ -246,7 +270,7 @@ void timer_set_mode(timer_dev *dev, uint8 channel, timer_mode mode) {
 int timer_has_cc_channel(timer_dev *dev, uint8 channel) {
     /* On all currently supported series: advanced and "full-featured"
      * general purpose timers have all four channels. Of the
-     * restricted general timers, timers 9 and 12 have channels 1 and
+     * restricted general timers, timers 9, 12 and 15 have channels 1 and
      * 2; the others have channel 1 only. Basic timers have none. */
     rcc_clk_id id = dev->clk_id;
     ASSERT((1 <= channel) && (channel <= 4));
@@ -256,7 +280,7 @@ int timer_has_cc_channel(timer_dev *dev, uint8 channel) {
         return 0;     /* 6 and 7 are basic */
     }
     /* The rest are restricted general. */
-    return (((id == RCC_TIMER9 || id == RCC_TIMER12) && channel <= 2) ||
+    return (((id == RCC_TIMER9 || id == RCC_TIMER12 || id == RCC_TIMER15) && channel <= 2) ||
             channel == 1);
 }
 
@@ -377,9 +401,11 @@ static void enable_bas_gen_irq(timer_dev *dev) {
     case RCC_TIMER4:
         irq_num = NVIC_TIMER4;
         break;
+#if STM32_HAVE_TIMER(5)
     case RCC_TIMER5:
         irq_num = NVIC_TIMER5;
         break;
+#endif
     case RCC_TIMER6:
         irq_num = NVIC_TIMER6;
         break;
@@ -404,6 +430,24 @@ static void enable_bas_gen_irq(timer_dev *dev) {
     case RCC_TIMER14:
         irq_num = NVIC_TIMER8_TRG_COM_TIMER14;
         break;
+#if STM32_HAVE_TIMER(15)
+    case RCC_TIMER15:
+        //irq_num = NVIC_TIMER1_BRK_TIMER15;
+        irq_num = NVIC_TIMER1_BRK_TIMER9;
+        break;
+#endif
+#if STM32_HAVE_TIMER(16)
+    case RCC_TIMER16:
+        //irq_num = NVIC_TIMER1_UP_TIMER16;
+        irq_num = NVIC_TIMER1_UP_TIMER10;
+        break;
+#endif
+#if STM32_HAVE_TIMER(17)
+    case RCC_TIMER17:
+        //irq_num = NVIC_TIMER1_TRG_COM_TIMER17;
+        irq_num = NVIC_TIMER1_TRG_COM_TIMER11;
+        break;
+#endif
     default:
         ASSERT_FAULT(0);
         return;
