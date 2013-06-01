@@ -3,6 +3,7 @@
  *
  * Copyright (c) 2011, 2012 LeafLabs, LLC.
  * Copyright (c) 2010 Perry Hung.
+ * Copyright (c) 2013 OpenMusicKontrollers.
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -27,7 +28,8 @@
 
 /**
  * @file libmaple/include/libmaple/spi.h
- * @author Marti Bolivar <mbolivar@leaflabs.com>
+ * @author Marti Bolivar <mbolivar@leaflabs.com>,
+ * 				 F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief Serial Peripheral Interface (SPI) and Integrated
  *        Interchip Sound (I2S) peripheral support.
  *
@@ -73,7 +75,7 @@ typedef struct spi_reg_map {
 #define SPI_CR1_BIDIOE_BIT              14
 #define SPI_CR1_CRCEN_BIT               13
 #define SPI_CR1_CRCNEXT_BIT             12
-#define SPI_CR1_DFF_BIT                 11
+#define SPI_CR1_DFF_BIT                 11	/* FIXME F3 incompatibility */
 #define SPI_CR1_RXONLY_BIT              10
 #define SPI_CR1_SSM_BIT                 9
 #define SPI_CR1_SSI_BIT                 8
@@ -414,9 +416,7 @@ static inline uint8 spi_is_rx_nonempty(spi_dev *dev) {
  * @return Contents of dev's peripheral RX register
  * @see spi_is_rx_reg_nonempty()
  */
-static inline uint16 spi_rx_reg(spi_dev *dev) {
-    return (uint16)dev->regs->DR;
-}
+extern uint16 spi_rx_reg(spi_dev *dev);
 
 /**
  * @brief Determine whether the device's peripheral transmit (TX)
@@ -427,6 +427,17 @@ static inline uint16 spi_rx_reg(spi_dev *dev) {
 static inline uint8 spi_is_tx_empty(spi_dev *dev) {
     return dev->regs->SR & SPI_SR_TXE;
 }
+
+/**
+ * @brief Nonblocking SPI transmit.
+ * @param dev SPI port to use for transmission
+ * @param buf Buffer to transmit.  The sizeof buf's elements are
+ *            inferred from dev's data frame format (i.e., are
+ *            correctly treated as 8-bit or 16-bit quantities).
+ * @param len Maximum number of elements to transmit.
+ * @return Number of elements transmitted.
+ */
+extern uint32 spi_tx(spi_dev *dev, const void *buf, uint32 len);
 
 /**
  * @brief Load a value into the device's peripheral transmit (TX) register.
@@ -446,7 +457,7 @@ static inline uint8 spi_is_tx_empty(spi_dev *dev) {
  * @see spi_slave_enable()
  */
 static inline void spi_tx_reg(spi_dev *dev, uint16 val) {
-    dev->regs->DR = val;
+    dev->regs->DR = val; /* FIXME F3 incompatibility */
 }
 
 /**
@@ -458,6 +469,12 @@ static inline void spi_tx_reg(spi_dev *dev, uint16 val) {
 static inline uint8 spi_is_busy(spi_dev *dev) {
     return dev->regs->SR & SPI_SR_BSY;
 }
+
+/*
+ * SPI auxiliary routines
+ */
+
+extern void spi_reconfigure(spi_dev *dev, uint32 cr1_config);
 
 /*
  * I2S convenience functions (TODO)

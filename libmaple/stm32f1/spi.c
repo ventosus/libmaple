@@ -82,3 +82,30 @@ void spi_foreach(void (*fn)(spi_dev*)) {
     fn(SPI3);
 #endif
 }
+
+/*
+ * SPI auxiliary routines
+ */
+void spi_reconfigure(spi_dev *dev, uint32 cr1_config) {
+    spi_irq_disable(dev, SPI_INTERRUPTS_ALL);
+    spi_peripheral_disable(dev);
+    dev->regs->CR1 = cr1_config;
+    spi_peripheral_enable(dev);
+}
+
+uint16 spi_rx_reg(spi_dev *dev) {
+		return (uint16)dev->regs->DR;
+}
+
+uint32 spi_tx(spi_dev *dev, const void *buf, uint32 len) {
+    uint32 txed = 0;
+    uint8 byte_frame = spi_dff(dev) == SPI_DFF_8_BIT;
+    while (spi_is_tx_empty(dev) && (txed < len)) {
+        if (byte_frame) {
+            dev->regs->DR = ((const uint8*)buf)[txed++];
+        } else {
+            dev->regs->DR = ((const uint16*)buf)[txed++];
+        }
+    }
+    return txed;
+}

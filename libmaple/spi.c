@@ -35,8 +35,6 @@
 #include <libmaple/spi.h>
 #include <libmaple/bitband.h>
 
-static void spi_reconfigure(spi_dev *dev, uint32 cr1_config);
-
 /*
  * SPI convenience routines
  */
@@ -80,28 +78,6 @@ void spi_master_enable(spi_dev *dev,
  */
 void spi_slave_enable(spi_dev *dev, spi_mode mode, uint32 flags) {
     spi_reconfigure(dev, flags | mode);
-}
-
-/**
- * @brief Nonblocking SPI transmit.
- * @param dev SPI port to use for transmission
- * @param buf Buffer to transmit.  The sizeof buf's elements are
- *            inferred from dev's data frame format (i.e., are
- *            correctly treated as 8-bit or 16-bit quantities).
- * @param len Maximum number of elements to transmit.
- * @return Number of elements transmitted.
- */
-uint32 spi_tx(spi_dev *dev, const void *buf, uint32 len) {
-    uint32 txed = 0;
-    uint8 byte_frame = spi_dff(dev) == SPI_DFF_8_BIT;
-    while (spi_is_tx_empty(dev) && (txed < len)) {
-        if (byte_frame) {
-            dev->regs->DR = ((const uint8*)buf)[txed++];
-        } else {
-            dev->regs->DR = ((const uint16*)buf)[txed++];
-        }
-    }
-    return txed;
 }
 
 /**
@@ -150,15 +126,4 @@ void spi_rx_dma_enable(spi_dev *dev) {
  */
 void spi_rx_dma_disable(spi_dev *dev) {
     bb_peri_set_bit(&dev->regs->CR2, SPI_CR2_RXDMAEN_BIT, 0);
-}
-
-/*
- * SPI auxiliary routines
- */
-
-static void spi_reconfigure(spi_dev *dev, uint32 cr1_config) {
-    spi_irq_disable(dev, SPI_INTERRUPTS_ALL);
-    spi_peripheral_disable(dev);
-    dev->regs->CR1 = cr1_config;
-    spi_peripheral_enable(dev);
 }
