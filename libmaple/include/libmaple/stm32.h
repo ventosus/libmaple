@@ -54,8 +54,10 @@ extern "C" {
 #define STM32_SERIES_F2 1
 /** STM32L1 series. */
 #define STM32_SERIES_L1 2
+/** STM32F3 series. */
+#define STM32_SERIES_F3 3
 /** STM32F4 series. */
-#define STM32_SERIES_F4 3
+#define STM32_SERIES_F4 4
 
 /* The series header is responsible for defining:
  *

@@ -25,7 +25,9 @@ cSRCS_$(d) += $(MCU_SERIES)/util_hooks.c
 cppSRCS_$(d) := boards.cpp
 cppSRCS_$(d) += cxxabi-compat.cpp
 cppSRCS_$(d) += ext_interrupts.cpp
+ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f1 stm32f2)) # TODO port USART to F3
 cppSRCS_$(d) += HardwareSerial.cpp
+endif
 cppSRCS_$(d) += HardwareTimer.cpp
 cppSRCS_$(d) += Print.cpp
 cppSRCS_$(d) += pwm.cpp
