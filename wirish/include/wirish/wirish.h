@@ -44,7 +44,7 @@
 #include <wirish/wirish_debug.h>
 #include <wirish/wirish_math.h>
 #include <wirish/wirish_time.h>
-#if STM32_MCU_SERIES == STM32_SERIES_F1 /* FIXME [0.0.13?] port to F2 */
+#if (STM32_MCU_SERIES == STM32_SERIES_F1) || (STM32_MCU_SERIES == STM32_SERIES_F3) /* FIXME [0.0.13?] port to F2 */
 #include <wirish/HardwareSPI.h>
 #endif
 #include <wirish/HardwareSerial.h>

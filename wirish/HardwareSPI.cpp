@@ -67,7 +67,7 @@ static const spi_pins board_spi_pins[] __FLASH__ = {
      BOARD_SPI2_SCK_PIN,
      BOARD_SPI2_MISO_PIN,
      BOARD_SPI2_MOSI_PIN},
-#ifdef STM32_HIGH_DENSITY
+#ifdef STM32_HIGH_DENSITY /* FIXME F3 series have it in MEDIUM_DENSITY */
     {BOARD_SPI3_NSS_PIN,
      BOARD_SPI3_SCK_PIN,
      BOARD_SPI3_MISO_PIN,

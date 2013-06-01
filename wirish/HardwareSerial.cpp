@@ -82,6 +82,7 @@ static void disable_timer_if_necessary(timer_dev *dev, uint8 ch) {
     }
 }
 #elif (STM32_MCU_SERIES == STM32_SERIES_F2) ||    \
+      (STM32_MCU_SERIES == STM32_SERIES_F3) ||    \
       (STM32_MCU_SERIES == STM32_SERIES_F4)
 #define disable_timer_if_necessary(dev, ch) ((void)0)
 #else
