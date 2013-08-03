@@ -27,29 +27,72 @@
 /**
  * @file   wirish/boards/48F3/include/board/board.h
  * @author F3-port: Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief  48pin F3 board header.
+ * @brief  F302xx board header (F302CB, F302CC, F302RB, F302RC, F302VB, F302VC).
  *
  * See wirish/boards/maple/include/board/board.h for more information
  * on these definitions.
  */
 
-#ifndef _BOARD_48F3_H_
-#define _BOARD_48F3_H_
+#ifndef _BOARD_F302xx_H_
+#define _BOARD_F302xx_H_
+
+#include <libmaple/stm32.h>
 
 #define CYCLES_PER_MICROSECOND    72
 #define SYSTICK_RELOAD_VAL     71999 /* takes a cycle to reload */
 
 enum {
+#if defined(STM32_MEDIUM_DENSITY) /* F302CB, F302CC */
 		PC13, PC14, PC15,
 		PF0, PF1,
-		PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7,
+		PA0, PA1, PA2, PA3, 
+		PA4, PA5, PA6, PA7,
 		PB0, PB1, PB2,
 		PB10, PB11, PB12, PB13, PB14, PB15,
 		PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15,
 		PB3, PB4, PB5, PB6, PB7, PB8, PB9,
+#elif defined(STM32_HIGH_DENSITY) /* F302RB, F302RC */
+		PC13, PC14, PC15,
+		PF0, PF1,
+		PC0, PC1, PC2, PC3,
+		PA0, PA1, PA2, PA3, 
+		PF4,
+		PA4, PA5, PA6, PA7,
+		PC4, PC5,
+		PB0, PB1, PB2,
+		PB10, PB11, PB12, PB13, PB14, PB15,
+		PC6, PC7, PC8, PC9,
+		PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15,
+		PC10, PC11, PC12,
+		PD2,
+		PB3, PB4, PB5, PB6, PB7, PB8, PB9,
+#elif defined(STM32_XL_DENSITY) /* F302VB, F302VC */
+		PE2, PE3, PE4, PE5, PE6,
+		PC13, PC14, PC15,
+		PF9, PF10,
+		PF0, PF1,
+		PC0, PC1, PC2, PC3,
+		PF2,
+		PA0, PA1, PA2, PA3, 
+		PF4,
+		PA4, PA5, PA6, PA7,
+		PC4, PC5,
+		PB0, PB1, PB2,
+		PE7, PE8, PE9, PE10, PE11, PE12, PE13, PE14, PE15,
+		PB10, PB11, PB12, PB13, PB14, PB15,
+		PD8, PD9, PD10, PD11, PD12, PD13, PD14, PD15,
+		PC6, PC7, PC8, PC9,
+		PA8, PA9, PA10, PA11, PA12, PA13,
+		PF6,
+		PA14, PA15,
+		PC10, PC11, PC12,
+		PD0, PD1,
+		PD2,
+		PD3, PD4, PD5, PD6, PD7,
+		PB3, PB4, PB5, PB6, PB7, PB8, PB9,
+		PE0, PE1,
+#endif
 };
-
-#define BOARD_NR_USARTS           3
 
 #define BOARD_USART1_TX_PIN       PA9		/* also PB6 */
 #define BOARD_USART1_RX_PIN       PA10	/* also PB7 */
@@ -59,6 +102,14 @@ enum {
 
 #define BOARD_USART3_TX_PIN       PB10
 #define BOARD_USART3_RX_PIN       PB11
+
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+# define BOARD_UART4_TX_PIN				PC10
+# define BOARD_UART4_RX_PIN				PC11
+
+# define BOARD_UART5_TX_PIN				PC12
+# define BOARD_UART5_RX_PIN				PD2
+#endif
 
 #define BOARD_NR_SPI              3
 
@@ -83,10 +134,25 @@ enum {
 #define BOARD_JTDO_PIN            PB3
 #define BOARD_NJTRST_PIN          PB4
 
-#define BOARD_NR_GPIO_PINS        37
-#define BOARD_NR_PWM_PINS         28
-#define BOARD_NR_ADC_PINS         15
-#define BOARD_NR_USED_PINS         4
+#if defined(STM32_MEDIUM_DENSITY)
+# define BOARD_NR_USARTS           3
+#	define BOARD_NR_GPIO_PINS        37
+#	define BOARD_NR_PWM_PINS         26
+#	define BOARD_NR_ADC_PINS         9
+#	define BOARD_NR_USED_PINS         4
+#elif defined(STM32_HIGH_DENSITY)
+# define BOARD_NR_USARTS           5
+#	define BOARD_NR_GPIO_PINS        52
+#	define BOARD_NR_PWM_PINS         30
+#	define BOARD_NR_ADC_PINS         16
+#	define BOARD_NR_USED_PINS         4
+#elif defined(STM32_XL_DENSITY)
+# define BOARD_NR_USARTS           5
+#	define BOARD_NR_GPIO_PINS        87
+#	define BOARD_NR_PWM_PINS         50
+#	define BOARD_NR_ADC_PINS         17
+#	define BOARD_NR_USED_PINS         4
+#endif
 
 /* redefine the following ones to match your hardware design */
 #define BOARD_BUTTON_PIN          PA14

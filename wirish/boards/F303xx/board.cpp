@@ -27,7 +27,7 @@
 /**
  * @file   wirish/boards/48F3/board.c
  * @author F3-port: Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief  48pin F3 board file.
+ * @brief  F303xx board file (F303CB, F303CC, F303RB, F303RC, F303VB, F303VC).
  */
 
 #include <board/board.h>
@@ -39,32 +39,86 @@
 #include <wirish/wirish_types.h>
 
 /* Since we want the Serial Wire/JTAG pins as GPIOs, disable both SW
- * and JTAG debug support, unless configured otherwise. */
+ * and JTAG debug support on the packages with low pin-count (e.g. MEDIUM_DENSITY),
+ * unless configured otherwise. */
 void boardInit(void) {
+#if defined(STM32_MEDIUM_DENSITY)
     disableDebugPorts();
+#endif
 }
 
 extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
+#if defined(STM32_XL_DENSITY)
+    {GPIOE, TIMER3, NULL,  2, 1, ADCx},	/* PE2 */  
+    {GPIOE, TIMER3, NULL,  3, 2, ADCx},	/* PE3 */  
+    {GPIOE, TIMER3, NULL,  4, 3, ADCx},	/* PE4 */  
+    {GPIOE, TIMER3, NULL,  5, 4, ADCx},	/* PE5 */  
+    {GPIOE,   NULL, NULL,  6, 0, ADCx},	/* PE6 */  
+#endif
+
+/* on all density devices */
     {GPIOC,   NULL, NULL, 13, 0, ADCx},	/* PC13 */  
     {GPIOC,   NULL, NULL, 14, 0, ADCx},	/* PC14 */ 			/* OSC32_IN */
     {GPIOC,   NULL, NULL, 15, 0, ADCx},	/* PC15 */ 			/* OSC32_OUT */
 
+#if defined(STM32_XL_DENSITY)
+    {GPIOF,TIMER15, NULL,  9, 1, ADCx},	/* PF9 */  
+    {GPIOF,TIMER15, NULL, 10, 2, ADCx},	/* PF10 */  
+#endif
+
+/* on all density devices */
     {GPIOF,   NULL, NULL,  0, 0, ADCx},	/* PF0 */ 			/* OSC_IN */
     {GPIOF,   NULL, NULL,  1, 0, ADCx},	/* PF1 */ 			/* OSC_OUT */
 
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    {GPIOC,   NULL, ADC1,  0, 0,    6},	/* PC0 */  
+    {GPIOC,   NULL, ADC1,  1, 0,    7},	/* PC1 */  
+    {GPIOC,   NULL, ADC1,  2, 0,    8},	/* PC2 */  
+    {GPIOC,   NULL, ADC1,  3, 0,    9},	/* PC3 */  
+#	if defined(STM32_XL_DENSITY)
+    {GPIOF,   NULL, ADC1,  2, 0,   10},	/* PF2 */  
+#	endif
+#endif
+
+/* on all density devices */
     {GPIOA, TIMER2, ADC1,  0, 1,    1},	/* PA0 */ 
     {GPIOA, TIMER2, ADC1,  1, 2,    2},	/* PA1 */ 
     {GPIOA, TIMER2, ADC1,  2, 3,    3},	/* PA2 */ 			/* also TIMER15 CH1 */
     {GPIOA, TIMER2, ADC1,  3, 4,    4},	/* PA3 */ 			/* also TIMER15 CH2 */
+
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    {GPIOF,   NULL, ADC1,  4, 0,    5},	/* PF4 */  
+#endif
+
+/* on all density devices */
     {GPIOA, TIMER3, ADC2,  4, 2,    1},	/* PA4 */ 
     {GPIOA,   NULL, ADC2,  5, 0,    2},	/* PA5 */ 
     {GPIOA, TIMER3, ADC2,  6, 1,    3},	/* PA6 */ 			/* also TIMER16 CH1 */
     {GPIOA, TIMER3, ADC2,  7, 2,    4},	/* PA7 */ 			/* also TIMER17 CH1 */
 
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    {GPIOC,   NULL, ADC2,  4, 0,    5},	/* PC4 */  
+    {GPIOC,   NULL, ADC2,  5, 0,   11},	/* PC5 */  
+#endif
+
+/* on all density devices */
     {GPIOB, TIMER3, ADC3,  0, 3,   12},	/* PB0 */ 
     {GPIOB, TIMER3, ADC3,  1, 4,    1},	/* PB1 */ 
     {GPIOB,   NULL, ADC2,  2, 0,   12},	/* PB2 */ 
 
+#if defined(STM32_XL_DENSITY)
+    {GPIOE,   NULL, ADC3,  7, 0,   13},	/* PE7 */  
+    {GPIOE,   NULL, ADC3,  8, 0,    6},	/* PE8 */  
+    {GPIOE, TIMER1, ADC3,  9, 1,    2},	/* PE9 */  
+    {GPIOE,   NULL, ADC3, 10, 0,   14},	/* PE10 */  
+    {GPIOE, TIMER1, ADC3, 11, 2,   15},	/* PE11 */  
+    {GPIOE,   NULL, ADC3, 12, 0,   15},	/* PE12 */  
+    {GPIOE, TIMER1, ADC3, 13, 3,    3},	/* PE13 */  
+    {GPIOE, TIMER1, ADC4, 14, 4,    1},	/* PE14 */  
+    {GPIOE,   NULL, ADC4, 15, 0,    2},	/* PE15 */  
+#endif
+
+/* on all density devices */
     {GPIOB, TIMER2, NULL, 10, 3, ADCx},	/* PB10 */ 
     {GPIOB, TIMER2, NULL, 11, 4, ADCx},	/* PB11 */ 
     {GPIOB,   NULL, ADC4, 12, 0,    3},	/* PB12 */ 
@@ -72,15 +126,57 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
     {GPIOB, TIMER15,ADC4, 14, 1,    4},	/* PB14 */ 
     {GPIOB, TIMER15,ADC4, 15, 2,    5},	/* PB15 */ 
 
+#if defined(STM32_XL_DENSITY)
+    {GPIOD,   NULL, ADC4,  8, 0,   12},	/* PD8 */  
+    {GPIOD,   NULL, ADC4,  9, 0,   13},	/* PD0 */  
+    {GPIOD,   NULL, ADC3, 10, 0,    7},	/* PD10 */  
+    {GPIOD,   NULL, ADC3, 11, 0,    8},	/* PD11 */  
+    {GPIOD, TIMER4, ADC3, 12, 1,    9},	/* PD12 */  
+    {GPIOD, TIMER4, ADC3, 13, 2,   10},	/* PD13 */  
+    {GPIOD, TIMER4, ADC3, 14, 3,   11},	/* PD14 */  
+    {GPIOD, TIMER4, NULL, 15, 4, ADCx},	/* PD15 */  
+#endif
+
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    {GPIOC, TIMER8, NULL,  6, 1, ADCx},	/* PC6 */  			/* also TIMER3_CH1 */
+    {GPIOC, TIMER8, NULL,  7, 2, ADCx},	/* PC7 */  			/* also TIMER3_CH2 */
+    {GPIOC, TIMER8, NULL,  8, 3, ADCx},	/* PC8 */ 			/* also TIMER3_CH3 */ 
+    {GPIOC, TIMER8, NULL,  9, 4, ADCx},	/* PC9 */ 			/* also TIMER3_CH4 */ 
+#endif
+
+/* on all density devices */
     {GPIOA, TIMER1, NULL,  8, 1, ADCx},	/* PA8 */ 
     {GPIOA, TIMER1, NULL,  9, 2, ADCx},	/* PA9 */ 			/* also TIMER2_CH3 */
     {GPIOA, TIMER1, NULL, 10, 3, ADCx},	/* PA10 */ 			/* also TIMER2 CH4 */
     {GPIOA, TIMER4, NULL, 11, 1, ADCx},	/* PA11 */ 			/* also TIMER1 CH4 */
     {GPIOA, TIMER4, NULL, 12, 2, ADCx},	/* PA12 */ 			/* also TIMER16 CH1 */
     {GPIOA, TIMER4, NULL, 13, 3, ADCx},	/* PA13 */ 
+#if defined(STM32_XL_DENSITY)
+    {GPIOF, TIMER4, NULL,  6, 4, ADCx},	/* PF6 */  
+#endif
     {GPIOA, TIMER8, NULL, 14, 2, ADCx},	/* PA14 */ 
     {GPIOA, TIMER8, NULL, 15, 1, ADCx},	/* PA15 */ 
 
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    {GPIOC,   NULL, NULL, 10, 0, ADCx},	/* PC10 */  
+    {GPIOC,   NULL, NULL, 11, 0, ADCx},	/* PC11 */  
+    {GPIOC,   NULL, NULL, 12, 0, ADCx},	/* PC12 */  
+
+#	if defined(STM32_XL_DENSITY)
+    {GPIOD,   NULL, NULL,  0, 0, ADCx},	/* PD0 */  
+    {GPIOD, TIMER8, NULL,  1, 4, ADCx},	/* PD1 */  
+#	endif
+    {GPIOD,   NULL, NULL,  2, 0, ADCx},	/* PD2 */  
+#	if defined(STM32_XL_DENSITY)
+    {GPIOD,   NULL, NULL,  3, 0, ADCx},	/* PD3 */  
+    {GPIOD, TIMER2, NULL,  4, 2, ADCx},	/* PD4 */  
+    {GPIOD,   NULL, NULL,  5, 0, ADCx},	/* PD5 */  
+    {GPIOD, TIMER2, NULL,  6, 4, ADCx},	/* PD6 */  
+    {GPIOD, TIMER2, NULL,  7, 3, ADCx},	/* PD7 */  
+#	endif
+#endif
+
+/* on all density devices */
     {GPIOB, TIMER2, NULL,  3, 2, ADCx},	/* PB3 */ 
     {GPIOB, TIMER3, NULL,  4, 1, ADCx},	/* PB4 */ 			/* also TIMER16 CH1 */
     {GPIOB, TIMER3, NULL,  5, 2, ADCx},	/* PB5 */ 			/* also TIMER17 CH1 */
@@ -88,14 +184,31 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
     {GPIOB, TIMER4, NULL,  7, 2, ADCx},	/* PB7 */ 			/* also TIMER3 CH4 */
     {GPIOB, TIMER4, NULL,  8, 3, ADCx},	/* PB8 */ 			/* also TIMER16 CH1 */
     {GPIOB, TIMER4, NULL,  9, 4, ADCx},	/* PB9 */ 			/* also TIMER17 CH1 */
+
+#if defined(STM32_XL_DENSITY)
+    {GPIOE,TIMER16, NULL,  0, 1, ADCx},	/* PE0 */  
+    {GPIOE,TIMER17, NULL,  1, 1, ADCx},	/* PE1 */  
+#endif
 };
 
 extern const uint8 boardPWMPins[BOARD_NR_PWM_PINS] __FLASH__ = {
 		PA0, PA1, PA2, PA3, PA4, PA6, PA7, PB0, PB1, PB10, PB11, PB14, PB15, PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9,
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+		PC6, PC7, PC8, PC9,
+#	if defined(STM32_XL_DENSITY)
+		PE2, PE3, PE4, PE5, PF9, PF10, PE9, PE11, PE13, PE14, PD12, PD13, PD14, PD15, PF6, PD1, PD4, PD6, PD7, PE0, PE1,
+#	endif
+#endif
 };
 
 extern const uint8 boardADCPins[BOARD_NR_ADC_PINS] __FLASH__ = {
-		PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7, PB0, PB1, PB2, PB12, PB13, PB14, PB15
+		PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7, PB0, PB1, PB2, PB12, PB13, PB14, PB15,
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+		PC0, PC1, PC2, PC3, PF4, PC4, PC5, 
+#	if defined(STM32_XL_DENSITY)
+		PF2, PE7, PE8, PE9, PE10, PE11, PE12, PE13, PE14, PE15, PD8, PD9, PD10, PD11, PD12, PD13, PD14, 
+#	endif
+#endif
 };
 
 #define OSC_IN PF0

@@ -191,16 +191,16 @@ extern "C" {
  * etc. here or by setting cflags when compiling libmaple.
  */
 
-#if STM32_F3_LINE == STM32_F3_LINE_303
-#    ifndef STM32_PCLK1
-#    define STM32_PCLK1                     36000000U
-#    endif
-#    ifndef STM32_PCLK2
-#    define STM32_PCLK2                     72000000U
-#    endif
-#    ifndef STM32_DELAY_US_MULT
-#    define STM32_DELAY_US_MULT             12 /* FIXME: value is incorrect. */
-#    endif
+#ifndef STM32_PCLK1
+#define STM32_PCLK1                     36000000U
+#endif
+
+#ifndef STM32_PCLK2
+#define STM32_PCLK2                     72000000U
+#endif
+
+#ifndef STM32_DELAY_US_MULT
+#define STM32_DELAY_US_MULT             12 /* FIXME: value is incorrect. */
 #endif
 
 /*
