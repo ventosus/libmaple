@@ -67,7 +67,7 @@ static const spi_pins board_spi_pins[] __FLASH__ = {
      BOARD_SPI2_SCK_PIN,
      BOARD_SPI2_MISO_PIN,
      BOARD_SPI2_MOSI_PIN},
-#ifdef STM32_HIGH_DENSITY /* FIXME F3 series have it in MEDIUM_DENSITY */
+#if defined(STM32_HIGH_DENSITY) || (STM32_MCU_SERIES == STM32_SERIES_F3)
     {BOARD_SPI3_NSS_PIN,
      BOARD_SPI3_SCK_PIN,
      BOARD_SPI3_MISO_PIN,
@@ -88,7 +88,7 @@ HardwareSPI::HardwareSPI(uint32 spi_num) {
     case 2:
         this->spi_d = SPI2;
         break;
-#ifdef STM32_HIGH_DENSITY
+#if defined(STM32_HIGH_DENSITY) || (STM32_MCU_SERIES == STM32_SERIES_F3)
     case 3:
         this->spi_d = SPI3;
         break;
@@ -237,7 +237,7 @@ static const spi_pins* dev_to_spi_pins(spi_dev *dev) {
     switch (dev->clk_id) {
     case RCC_SPI1: return board_spi_pins;
     case RCC_SPI2: return board_spi_pins + 1;
-#ifdef STM32_HIGH_DENSITY
+#if defined(STM32_HIGH_DENSITY) || (STM32_MCU_SERIES == STM32_SERIES_F3)
     case RCC_SPI3: return board_spi_pins + 2;
 #endif
     default:       return NULL;

@@ -1,7 +1,7 @@
 /******************************************************************************
  * The MIT License
  *
- * Copyright (c) 2013 Hanspeter Portner.
+ * Copyright (c) 2013 OpenMusicKontrollers.
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +26,7 @@
 
 /**
  * @file   wirish/boards/48F3/include/board/board.h
- * @author Hanspeter Portner <agenthp@users.sf.net>
+ * @author F3-port: Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief  48pin F3 board header.
  *
  * See wirish/boards/maple/include/board/board.h for more information
