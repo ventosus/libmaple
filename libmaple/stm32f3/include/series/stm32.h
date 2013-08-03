@@ -92,7 +92,7 @@ extern "C" {
 #   define STM32_SRAM_END               ((void*)0x2000A000)
 #   define STM32_HIGH_DENSITY // 64pin package
 
-#elif defined(MCU_STM32F302VV)
+#elif defined(MCU_STM32F302VC)
 #   define STM32_F3_LINE                STM32_F3_LINE_302
 #   define STM32_NR_GPIO_PORTS          45
 #   define STM32_SRAM_END               ((void*)0x2000A000)
@@ -146,24 +146,40 @@ extern "C" {
 #    define STM32_HAVE_USB              1
 
 #    ifdef STM32_MEDIUM_DENSITY
-#       define STM32_NR_INTERRUPTS      81
+#       define STM32_NR_INTERRUPTS      82
 #       define STM32_TIMER_MASK         0b111000000001011110
 #       define STM32_HAVE_FSMC          0
 #       define STM32_HAVE_DAC           1
-#    elif defined(STM32_HIGH_DENSITY) //TODO
-#    elif defined(STM32_XL_DENSITY) //TODO
+#    elif defined(STM32_HIGH_DENSITY)
+#       define STM32_NR_INTERRUPTS      82
+#       define STM32_TIMER_MASK         0b111000000001011110
+#       define STM32_HAVE_FSMC          0
+#       define STM32_HAVE_DAC           1
+#    elif defined(STM32_XL_DENSITY)
+#       define STM32_NR_INTERRUPTS      82
+#       define STM32_TIMER_MASK         0b111000000001011110
+#       define STM32_HAVE_FSMC          0
+#       define STM32_HAVE_DAC           1
 #    endif
 
 #elif STM32_F3_LINE == STM32_F3_LINE_303
 #    define STM32_HAVE_USB              1
 
 #    ifdef STM32_MEDIUM_DENSITY
-#       define STM32_NR_INTERRUPTS      81
+#       define STM32_NR_INTERRUPTS      82
 #       define STM32_TIMER_MASK         0b111000000111011110
 #       define STM32_HAVE_FSMC          0
 #       define STM32_HAVE_DAC           1
-#    elif defined(STM32_HIGH_DENSITY) //TODO
-#    elif defined(STM32_XL_DENSITY) //TODO
+#    elif defined(STM32_HIGH_DENSITY)
+#       define STM32_NR_INTERRUPTS      82
+#       define STM32_TIMER_MASK         0b111000000111011110
+#       define STM32_HAVE_FSMC          0
+#       define STM32_HAVE_DAC           1
+#    elif defined(STM32_XL_DENSITY)
+#       define STM32_NR_INTERRUPTS      82
+#       define STM32_TIMER_MASK         0b111000000111011110
+#       define STM32_HAVE_FSMC          0
+#       define STM32_HAVE_DAC           1
 #    endif
 
 #endif
