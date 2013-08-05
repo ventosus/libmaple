@@ -26,7 +26,8 @@
 
 /**
  * @file libmaple/stm32f2/include/series/usart.h
- * @author Marti Bolivar <mbolivar@leaflabs.com>
+ * @author Marti Bolivar <mbolivar@leaflabs.com>,
+ * 				 F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief STM32F2 USART support.
  */
 
@@ -40,10 +41,23 @@ extern "C"{
 #include <libmaple/gpio.h>      /* for gpio_af */
 
 /*
- * Register map base pointers.
+ * Register map (common across supported STM32 series).
  */
 
-struct usart_reg_map;
+/** USART register map type */
+typedef struct usart_reg_map {
+    __io uint32 SR;             /**< Status register */
+    __io uint32 DR;             /**< Data register */
+    __io uint32 BRR;            /**< Baud rate register */
+    __io uint32 CR1;            /**< Control register 1 */
+    __io uint32 CR2;            /**< Control register 2 */
+    __io uint32 CR3;            /**< Control register 3 */
+    __io uint32 GTPR;           /**< Guard time and prescaler register */
+} usart_reg_map;
+
+/*
+ * Register map base pointers.
+ */
 
 /** USART1 register map base pointer */
 #define USART1_BASE                     ((struct usart_reg_map*)0x40011000)
@@ -68,11 +82,34 @@ struct usart_reg_map;
  * @brief Oversampling mode bit.
  * Availability: STM32F2. */
 #define USART_CR1_OVER8_BIT             15
+/** USART enable bit */
+#define USART_CR1_UE_BIT                13
+/** Receiver wakeup bit */
+#define USART_CR1_RWU_BIT               1
+/** Send break bit */
+#define USART_CR1_SBK_BIT               0
 
 /**
  * @brief Oversampling mode.
  * Availability: STM32F2. */
 #define USART_CR1_OVER8                 (1U << USART_CR1_OVER8_BIT)
+/** USART enable mask */
+#define USART_CR1_UE                    BIT(USART_CR1_UE_BIT)
+/** Receiver wakeup mask */
+#define USART_CR1_RWU                   BIT(USART_CR1_RWU_BIT)
+/** Receiver wakeup: receiver in active mode */
+#define USART_CR1_RWU_ACTIVE            (0 << USART_CR1_RWU_BIT)
+/** Receiver wakeup: receiver in mute mode */
+#define USART_CR1_RWU_MUTE              (1 << USART_CR1_RWU_BIT)
+/** Send break */
+#define USART_CR1_SBK                   BIT(USART_CR1_SBK_BIT)
+
+/* Control register 2 */
+
+/**
+ * @brief Address of the USART node
+ * This is useful during multiprocessor communication. */
+#define USART_CR2_ADD                   0xF
 
 /* Control register 3 */
 

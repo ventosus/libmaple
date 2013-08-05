@@ -129,6 +129,15 @@ void usart_set_baud_rate(usart_dev *dev, uint32 clock_speed, uint32 baud) {
     dev->regs->BRR = (uint16)tmp;
 }
 
+uint32 usart_tx(usart_dev *dev, const uint8 *buf, uint32 len) {
+    usart_reg_map *regs = dev->regs;
+    uint32 txed = 0;
+    while ((regs->SR & USART_SR_TXE) && (txed < len)) {
+        regs->DR = buf[txed++];
+    }
+    return txed;
+}
+
 /**
  * @brief Call a function on each USART.
  * @param fn Function to call.
@@ -146,6 +155,17 @@ void usart_foreach(void (*fn)(usart_dev*)) {
 /*
  * Interrupt handlers.
  */
+
+static __always_inline void usart_irq(ring_buffer *rb, usart_reg_map *regs) {
+#ifdef USART_SAFE_INSERT
+    /* If the buffer is full and the user defines USART_SAFE_INSERT,
+     * ignore new bytes. */
+    rb_safe_insert(rb, (uint8)regs->DR);
+#else
+    /* By default, push bytes around in the ring buffer. */
+    rb_push_insert(rb, (uint8)regs->DR);
+#endif
+}
 
 void __irq_usart1(void) {
     usart_irq(&usart1_rb, USART1_BASE);

@@ -27,10 +27,8 @@ ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f2 stm32f3)) # SYSCFG peripheral
 cSRCS_$(d) += syscfg.c
 endif
 cSRCS_$(d) += timer.c
-ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f1 stm32f2)) # TODO port USART to F3
 cSRCS_$(d) += usart.c
 cSRCS_$(d) += usart_private.c
-endif
 cSRCS_$(d) += util.c
 sSRCS_$(d) := exc.S
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f1 stm32f3)) # TODO port I2C to F2

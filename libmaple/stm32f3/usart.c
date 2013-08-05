@@ -103,39 +103,29 @@ void usart_config_gpios_async(usart_dev *udev,
                               gpio_dev *rx_dev, uint8 rx,
                               gpio_dev *tx_dev, uint8 tx,
                               unsigned flags) {
-    gpio_set_modef(rx_dev, rx, GPIO_MODE_AF, GPIO_MODEF_PUPD_NONE);
-    gpio_set_modef(tx_dev, tx, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP);
+    gpio_af af = usart_get_af(udev);
+    gpio_set_modef(rx_dev, rx, GPIO_MODE_AF, 0);
+    gpio_set_modef(tx_dev, tx, GPIO_MODE_AF, 0);
+    gpio_set_af(rx_dev, rx, af);
+    gpio_set_af(tx_dev, tx, af);
 }
 
 void usart_set_baud_rate(usart_dev *dev, uint32 clock_speed, uint32 baud) {
-		//TODO
+		uint32 divider = clock_speed / baud;
+		uint32 tmpreg = clock_speed % baud;
+		/* round divider : if fractional part i greater than 0.5 increment divider */
+		if (tmpreg >= baud / 2)
+			divider++;
+		dev->regs->BRR = (uint16)divider;
 }
 
-void usart_enable(usart_dev *dev)
-{
-		//TODO
-}
-
-void usart_disable(usart_dev *dev)
-{
-		//TODO
-}
-
-uint32 usart_tx(usart_dev *dev, const uint8 *buf, uint32 len)
-{
-		//TODO
-		return 0U;
-}
-
-uint32 usart_rx(usart_dev *dev, uint8 *buf, uint32 len)
-{
-		//TODO
-		return 0U;
-}
-
-void usart_putudec(usart_dev *dev, uint32 val)
-{
-		//TODO
+uint32 usart_tx(usart_dev *dev, const uint8 *buf, uint32 len) {
+    usart_reg_map *regs = dev->regs;
+    uint32 txed = 0;
+    while ((regs->SR & USART_SR_TXE) && (txed < len)) {
+        regs->TDR = buf[txed++];
+    }
+    return txed;
 }
 
 /**
@@ -152,28 +142,61 @@ void usart_foreach(void (*fn)(usart_dev*)) {
 #endif
 }
 
+/**
+ * @brief Get GPIO alternate function mode for a USART.
+ * @param dev USART whose gpio_af to get.
+ * @return gpio_af corresponding to dev.
+ */
+gpio_af usart_get_af(usart_dev *dev) {
+    switch (dev->clk_id) {
+    case RCC_USART1:
+    case RCC_USART2:
+    case RCC_USART3:
+        return GPIO_AF_7;
+#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    case RCC_UART4:
+    case RCC_UART5:
+        return GPIO_AF_5;
+#endif
+    default:
+        ASSERT(0);              /* Can't happen */
+        return (gpio_af)-1;
+    }
+}
+
 /*
  * Interrupt handlers.
  */
 
+static __always_inline void usart_irq(ring_buffer *rb, usart_reg_map *regs) {
+#ifdef USART_SAFE_INSERT
+    /* If the buffer is full and the user defines USART_SAFE_INSERT,
+     * ignore new bytes. */
+    rb_safe_insert(rb, (uint8)regs->RDR);
+#else
+    /* By default, push bytes around in the ring buffer. */
+    rb_push_insert(rb, (uint8)regs->RDR);
+#endif
+}
+
 void __irq_usart1(void) {
-		//TODO
+    usart_irq(&usart1_rb, USART1_BASE);
 }
 
 void __irq_usart2(void) {
-		//TODO
+    usart_irq(&usart2_rb, USART2_BASE);
 }
 
 void __irq_usart3(void) {
-		//TODO
+    usart_irq(&usart3_rb, USART3_BASE);
 }
 
 #ifdef STM32_HIGH_DENSITY
 void __irq_uart4(void) {
-		//TODO
+    usart_irq(&uart4_rb, UART4_BASE);
 }
 
 void __irq_uart5(void) {
-		//TODO
+    usart_irq(&uart5_rb, UART5_BASE);
 }
 #endif

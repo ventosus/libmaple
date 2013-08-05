@@ -27,7 +27,8 @@
 /**
  * @file libmaple/include/libmaple/usart.h
  * @author Marti Bolivar <mbolivar@leaflabs.com>,
- *         Perry Hung <perry@leaflabs.com>
+ *         Perry Hung <perry@leaflabs.com>,
+ * 				 F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief USART definitions and prototypes
  */
 
@@ -44,21 +45,6 @@ extern "C"{
 #include <libmaple/nvic.h>
 #include <libmaple/ring_buffer.h>
 #include <series/usart.h>
-
-/*
- * Register map (common across supported STM32 series).
- */
-
-/** USART register map type */
-typedef struct usart_reg_map {
-    __io uint32 SR;             /**< Status register */
-    __io uint32 DR;             /**< Data register */
-    __io uint32 BRR;            /**< Baud rate register */
-    __io uint32 CR1;            /**< Control register 1 */
-    __io uint32 CR2;            /**< Control register 2 */
-    __io uint32 CR3;            /**< Control register 3 */
-    __io uint32 GTPR;           /**< Guard time and prescaler register */
-} usart_reg_map;
 
 /*
  * Register bit definitions
@@ -138,8 +124,6 @@ typedef struct usart_reg_map {
 
 /* Control register 1 */
 
-/** USART enable bit */
-#define USART_CR1_UE_BIT                13
 /** Word length bit */
 #define USART_CR1_M_BIT                 12
 /** Wakeup method bit */
@@ -162,13 +146,7 @@ typedef struct usart_reg_map {
 #define USART_CR1_TE_BIT                3
 /** Receiver enable bit */
 #define USART_CR1_RE_BIT                2
-/** Receiver wakeup bit */
-#define USART_CR1_RWU_BIT               1
-/** Send break bit */
-#define USART_CR1_SBK_BIT               0
 
-/** USART enable mask */
-#define USART_CR1_UE                    BIT(USART_CR1_UE_BIT)
 /** Word length mask */
 #define USART_CR1_M                     BIT(USART_CR1_M_BIT)
 /** Word length: 1 start bit, 8 data bits, n stop bit */
@@ -203,14 +181,6 @@ typedef struct usart_reg_map {
 #define USART_CR1_TE                    BIT(USART_CR1_TE_BIT)
 /** Receiver enable mask */
 #define USART_CR1_RE                    BIT(USART_CR1_RE_BIT)
-/** Receiver wakeup mask */
-#define USART_CR1_RWU                   BIT(USART_CR1_RWU_BIT)
-/** Receiver wakeup: receiver in active mode */
-#define USART_CR1_RWU_ACTIVE            (0 << USART_CR1_RWU_BIT)
-/** Receiver wakeup: receiver in mute mode */
-#define USART_CR1_RWU_MUTE              (1 << USART_CR1_RWU_BIT)
-/** Send break */
-#define USART_CR1_SBK                   BIT(USART_CR1_SBK_BIT)
 
 /* Control register 2 */
 
@@ -285,10 +255,6 @@ typedef struct usart_reg_map {
 #define USART_CR2_LBDL_10_BIT           (0 << USART_CR2_LBDL_BIT)
 /** LIN break detection length: 11 bits */
 #define USART_CR2_LBDL_11_BIT           (1 << USART_CR2_LBDL_BIT)
-/**
- * @brief Address of the USART node
- * This is useful during multiprocessor communication. */
-#define USART_CR2_ADD                   0xF
 
 /* Control register 3 */
 
@@ -417,6 +383,13 @@ void usart_set_baud_rate(usart_dev *dev, uint32 clock_speed, uint32 baud);
 void usart_enable(usart_dev *dev);
 void usart_disable(usart_dev *dev);
 void usart_foreach(void (*fn)(usart_dev *dev));
+/**
+ * @brief Nonblocking USART transmit
+ * @param dev Serial port to transmit over
+ * @param buf Buffer to transmit
+ * @param len Maximum number of bytes to transmit
+ * @return Number of bytes transmitted
+ */
 uint32 usart_tx(usart_dev *dev, const uint8 *buf, uint32 len);
 uint32 usart_rx(usart_dev *dev, uint8 *buf, uint32 len);
 void usart_putudec(usart_dev *dev, uint32 val);

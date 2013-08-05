@@ -37,24 +37,31 @@
 extern "C"{
 #endif
 
+#include <libmaple/gpio.h>      /* for gpio_af */
+
 /*
  * Register maps
  */
 
-///** I2C register map type */
-//typedef struct usart_reg_map {
-//    __io uint32 CR1;            /**< Control register 1 */
-//    __io uint32 CR2;            /**< Control register 2 */
-//    __io uint32 CR3;            /**< Control register 3 */
-//    __io uint32 BRR;            /**< Baud rate register */
-//    __io uint32 GTPR;           /**< Guard time and prescaler register */
-//    __io uint32 RTOR;           /**< Receiver timeout register */
-//    __io uint32 RQR;            /**< Request register */
-//    __io uint32 ISR;            /**< Interrupt and status register */
-//    __io uint32 ICR;            /**< Interrupt clear register */
-//    __io uint32 RDR;            /**< Receive data register */
-//    __io uint32 TDR;            /**< Transmit data register */
-//} usart_reg_map;
+/** USART register map type */
+typedef struct usart_reg_map {
+    __io uint32 CR1;            /**< Control register 1 */
+    __io uint32 CR2;            /**< Control register 2 */
+    __io uint32 CR3;            /**< Control register 3 */
+    __io uint16 BRR;            /**< Baud rate register */
+		uint16 RESERVED1;						/**< Reserved, 0x0E */
+    __io uint16 GTPR;           /**< Guard time and prescaler register */
+		uint16 RESERVED2;						/**< Reserved, 0x12 */
+    __io uint32 RTOR;           /**< Receiver timeout register */
+    __io uint16 RQR;            /**< Request register */
+		uint16 RESERVED3;						/**< Reserved, 0x1A */
+    __io uint32 SR;             /**< ISR Interrupt and status register */
+    __io uint32 ICR;            /**< Interrupt clear register */
+    __io uint16 RDR;            /**< Receive data register */
+		uint16 RESERVED4;						/**< Reserved, 0x26 */
+    __io uint16 TDR;            /**< Transmit data register */
+		uint16 RESERVED5;						/**< Reserved, 0x2A */
+} usart_reg_map;
 
 /*
  * Register map base pointers
@@ -74,8 +81,197 @@ extern "C"{
 #define UART5_BASE                      ((struct usart_reg_map*)0x40005000)
 #endif
 
-/* TODO add register bit definitions */
-/* TODO add some routines */
+/*
+ * Devices
+ */
+
+struct usart_dev;
+extern struct usart_dev *USART1;
+extern struct usart_dev *USART2;
+extern struct usart_dev *USART3;
+#ifdef STM32_HIGH_DENSITY
+extern struct usart_dev *UART4;
+extern struct usart_dev *UART5;
+#endif
+
+/*
+ * F3-only register bit definitions.
+ */
+
+/* Control register 1 */
+#define USART_CR1_EOBIE_BIT					27
+#define USART_CR1_RTOIE_BIT					26
+#define USART_CR1_DEAT4_BIT					25
+#define USART_CR1_DEAT3_BIT					24
+#define USART_CR1_DEAT2_BIT					23
+#define USART_CR1_DEAT1_BIT					22
+#define USART_CR1_DEAT0_BIT					21
+#define USART_CR1_DEDT4_BIT					20
+#define USART_CR1_DEDT3_BIT					19
+#define USART_CR1_DEDT2_BIT					18
+#define USART_CR1_DEDT1_BIT					17
+#define USART_CR1_DEDT0_BIT					16
+#define USART_CR1_OVER8_BIT					15
+#define USART_CR1_CMIE_BIT					14
+#define USART_CR1_MME_BIT						13
+#define USART_CR1_UESM_BIT					1
+#define USART_CR1_UE_BIT						0
+
+#define USART_CR1_EOBIE							(1UL << USART_CR1_EOBIE_BIT)
+#define USART_CR1_RTOIE             (1UL << USART_CR1_RTOIE_BIT)
+#define USART_CR1_DEAT4             (1UL << USART_CR1_DEAT4_BIT)
+#define USART_CR1_DEAT3             (1UL << USART_CR1_DEAT3_BIT)
+#define USART_CR1_DEAT2             (1UL << USART_CR1_DEAT2_BIT)
+#define USART_CR1_DEAT1             (1UL << USART_CR1_DEAT1_BIT)
+#define USART_CR1_DEAT0             (1UL << USART_CR1_DEAT0_BIT)
+#define USART_CR1_DEDT4             (1UL << USART_CR1_DEDT4_BIT)
+#define USART_CR1_DEDT3             (1UL << USART_CR1_DEDT3_BIT)
+#define USART_CR1_DEDT2             (1UL << USART_CR1_DEDT2_BIT)
+#define USART_CR1_DEDT1             (1UL << USART_CR1_DEDT1_BIT)
+#define USART_CR1_DEDT0             (1UL << USART_CR1_DEDT0_BIT)
+#define USART_CR1_OVER8             (1UL << USART_CR1_OVER8_BIT)
+#define USART_CR1_CMIE              (1UL << USART_CR1_CMIE_BIT)
+#define USART_CR1_MME               (1UL << USART_CR1_MME_BIT)
+#define USART_CR1_UESM              (1UL << USART_CR1_UESM_BIT)
+#define USART_CR1_UE                (1UL << USART_CR1_UE_BIT)
+
+/* Control register 2 */
+#define USART_CR2_ADD_SHIFT					24
+#define USART_CR2_RTOEN_BIT					23
+#define USART_CR2_ABRMOD1_BIT				22
+#define USART_CR2_ABRMOD0_BIT				21
+#define USART_CR2_ABREN_BIT					20
+#define USART_CR2_MSBFIRST_BIT			19
+#define USART_CR2_DATAINV_BIT				18
+#define USART_CR2_TXINV_BIT					17
+#define USART_CR2_RXINV_BIT					16
+#define USART_CR2_SWAP_BIT					15
+#define USART_CR2_ADDM7_BIT					4
+
+#define USART_CR2_ADD								(0xFF << USART_CR2_ADD_SHIFT)
+#define USART_CR2_RTOEN							(1UL << USART_CR2_RTOEN_BIT)
+#define USART_CR2_ABRMOD1           (1UL << USART_CR2_ABRMOD1_BIT)
+#define USART_CR2_ABRMOD0           (1UL << USART_CR2_ABRMOD0_BIT)
+#define USART_CR2_ABREN             (1UL << USART_CR2_ABREN_BIT)
+#define USART_CR2_MSBFIRST          (1UL << USART_CR2_MSBFIRST_BIT)
+#define USART_CR2_DATAINV           (1UL << USART_CR2_DATAINV_BIT)
+#define USART_CR2_TXINV             (1UL << USART_CR2_TXINV_BIT)
+#define USART_CR2_RXINV             (1UL << USART_CR2_RXINV_BIT)
+#define USART_CR2_SWAP              (1UL << USART_CR2_SWAP_BIT)
+#define USART_CR2_ADDM7             (1UL << USART_CR2_ADDM7_BIT)
+
+/* Control register 3 */
+#define USART_CR3_WUFIE_BIT					22
+#define USART_CR3_WUS_SHIFT					20
+#define USART_CR3_SCAR_SHIFT				17
+#define USART_CR3_DEP_BIT						15
+#define USART_CR3_DEM_BIT						14
+#define USART_CR3_DDRE_BIT					13
+#define USART_CR3_OVRDIS_BIT				12
+#define USART_CR3_ONEBIT_BIT				11
+
+#define USART_CR3_WUFIE							(1UL << USART_CR3_WUFIE_BIT)
+#define USART_CR3_WUS								(0x3 << USART_CR3_WUS_SHIFT)
+#define USART_CR3_SCAR							(0x7 << USART_CR3_SCAR_SHIFT)
+#define USART_CR3_DEP								(1UL << USART_CR3_DEP_BIT)
+#define USART_CR3_DEM               (1UL << USART_CR3_DEM_BIT)
+#define USART_CR3_DDRE              (1UL << USART_CR3_DDRE_BIT)
+#define USART_CR3_OVRDIS            (1UL << USART_CR3_OVRDIS_BIT)
+#define USART_CR3_ONEBIT            (1UL << USART_CR3_ONEBIT_BIT)
+
+/* Receive timeout register */
+#define USART_RTOR_BLEN_SHIFT				24
+#define USART_RTOR_RTO_SHIFT				0
+
+#define USART_RTOR_BLEN							(0xF << USART_RTOR_BLEN_SHIFT)
+#define USART_RTOR_RTO							(0xFFF << USART_RTOR_RTO_SHIFT)
+
+/* Request register */
+#define USART_RQR_TXFRQ_BIT					4
+#define USART_RQR_RXFRQ_BIT					3
+#define USART_RQR_MMRQ_BIT					2
+#define USART_RQR_SBKRQ_BIT					1
+#define USART_RQR_ABRRQ_BIT					0
+
+#define USART_RQR_TXFRQ							(1UL << USART_RQR_TXFRQ_BIT)
+#define USART_RQR_RXFRQ             (1UL << USART_RQR_RXFRQ_BIT)
+#define USART_RQR_MMRQ              (1UL << USART_RQR_MMRQ_BIT)
+#define USART_RQR_SBKRQ             (1UL << USART_RQR_SBKRQ_BIT)
+#define USART_RQR_ABRRQ             (1UL << USART_RQR_ABRRQ_BIT)
+
+/* Interrupt and status register */
+// common register bits with other STM32 series are defined as USART_SR_* for compatibility 
+#define USART_ISR_REACK_BIT					22
+#define USART_ISR_TEACK_BIT					21
+#define USART_ISR_WUF_BIT						20
+#define USART_ISR_RWU_BIT						19
+#define USART_ISR_SBKF_BIT					18
+#define USART_ISR_CMF_BIT						17
+#define USART_ISR_BUSY_BIT					16
+#define USART_ISR_ABRF_BIT					15
+#define USART_ISR_ABRE_BIT					14
+#define USART_ISR_EOBF_BIT					12
+#define USART_ISR_RTOF_BIT					11
+#define USART_ISR_CTS_BIT						10
+#define USART_ISR_CTSIF_BIT					9
+
+#define USART_ISR_REACK							(1UL << USART_ISR_REACK_BIT)
+#define USART_ISR_TEACK        	    (1UL << USART_ISR_TEACK_BIT)
+#define USART_ISR_WUF          	    (1UL << USART_ISR_WUF_BIT)
+#define USART_ISR_RWU          	    (1UL << USART_ISR_RWU_BIT)
+#define USART_ISR_SBKF         	    (1UL << USART_ISR_SBKF_BIT)
+#define USART_ISR_CMF          	    (1UL << USART_ISR_CMF_BIT)
+#define USART_ISR_BUSY         	    (1UL << USART_ISR_BUSY_BIT)
+#define USART_ISR_ABRF         	    (1UL << USART_ISR_ABRF_BIT)
+#define USART_ISR_ABRE         	    (1UL << USART_ISR_ABRE_BIT)
+#define USART_ISR_EOBF         	    (1UL << USART_ISR_EOBF_BIT)
+#define USART_ISR_RTOF         	    (1UL << USART_ISR_RTOF_BIT)
+#define USART_ISR_CTS	        	    (1UL << USART_ISR_CTS_BIT)
+#define USART_ISR_CTSIF        	    (1UL << USART_ISR_CTSIF_BIT)
+
+/* Interrupt clear register */
+#define USART_ICR_WUFCF_BIT					20
+#define USART_ICR_CMCF_BIT					17
+#define USART_ICR_EOBCF_BIT					12
+#define USART_ICR_RTOCF_BIT					11
+#define USART_ICR_CTSCF_BIT					9
+#define USART_ICR_LBDCF_BIT					8
+#define USART_ICR_TCCF_BIT					6
+#define USART_ICR_IDLECF_BIT				4
+#define USART_ICR_ORECF_BIT					3
+#define USART_ICR_NCF_BIT						2
+#define USART_ICR_FECF_BIT					1
+#define USART_ICR_PECF_BIT					0
+
+#define USART_ICR_WUFCF        			(1UL << USART_ICR_WUFCF_BIT)
+#define USART_ICR_CMCF         			(1UL << USART_ICR_CMCF_BIT)
+#define USART_ICR_EOBCF        			(1UL << USART_ICR_EOBCF_BIT)
+#define USART_ICR_RTOCF        			(1UL << USART_ICR_RTOCF_BIT)
+#define USART_ICR_CTSCF        			(1UL << USART_ICR_CTSCF_BIT)
+#define USART_ICR_LBDCF        			(1UL << USART_ICR_LBDCF_BIT)
+#define USART_ICR_TCCF         			(1UL << USART_ICR_TCCF_BIT)
+#define USART_ICR_IDLECF       			(1UL << USART_ICR_IDLECF_BIT)
+#define USART_ICR_ORECF        			(1UL << USART_ICR_ORECF_BIT)
+#define USART_ICR_NCF          			(1UL << USART_ICR_NCF_BIT)
+#define USART_ICR_FECF         			(1UL << USART_ICR_FECF_BIT)
+#define USART_ICR_PECF         			(1UL << USART_ICR_PECF_BIT)
+
+/* Receive data register */
+#define USART_RDR_RDR_SHIFT					0
+
+#define USART_RDR_RDR								(0xFF << USART_RDR_RDR_SHFIT)
+
+
+/* Transmit data register */
+#define USART_TDR_TDR_SHIFT					0
+
+#define USART_TDR_TDR								(0xFF << USART_TDR_TDR_SHFIT)
+
+/*
+ * Routines
+ */
+
+gpio_af usart_get_af(struct usart_dev *dev);
 
 #ifdef __cplusplus
 }

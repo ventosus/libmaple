@@ -82,22 +82,6 @@ void usart_disable(usart_dev *dev) {
 }
 
 /**
- * @brief Nonblocking USART transmit
- * @param dev Serial port to transmit over
- * @param buf Buffer to transmit
- * @param len Maximum number of bytes to transmit
- * @return Number of bytes transmitted
- */
-uint32 usart_tx(usart_dev *dev, const uint8 *buf, uint32 len) {
-    usart_reg_map *regs = dev->regs;
-    uint32 txed = 0;
-    while ((regs->SR & USART_SR_TXE) && (txed < len)) {
-        regs->DR = buf[txed++];
-    }
-    return txed;
-}
-
-/**
  * @brief Nonblocking USART receive.
  * @param dev Serial port to receive bytes from
  * @param buf Buffer to store received bytes into
