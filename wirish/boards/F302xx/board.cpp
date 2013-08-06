@@ -48,146 +48,115 @@ void boardInit(void) {
 }
 
 extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
-#if defined(STM32_XL_DENSITY)
-    {GPIOE, TIMER3, NULL,  2, 1, ADCx},	/* PE2 */  
-    {GPIOE, TIMER3, NULL,  3, 2, ADCx},	/* PE3 */  
-    {GPIOE, TIMER3, NULL,  4, 3, ADCx},	/* PE4 */  
-    {GPIOE, TIMER3, NULL,  5, 4, ADCx},	/* PE5 */  
-    {GPIOE,   NULL, NULL,  6, 0, ADCx},	/* PE6 */  
-#endif
+    [PC13]= {GPIOC,   NULL, NULL, 13, 0, ADCx},	/* PC13 */  
+    [PC14]= {GPIOC,   NULL, NULL, 14, 0, ADCx},	/* PC14 */ 			/* OSC32_IN */
+    [PC15]= {GPIOC,   NULL, NULL, 15, 0, ADCx},	/* PC15 */ 			/* OSC32_OUT */
 
-/* on all density devices */
-    {GPIOC,   NULL, NULL, 13, 0, ADCx},	/* PC13 */  
-    {GPIOC,   NULL, NULL, 14, 0, ADCx},	/* PC14 */ 			/* OSC32_IN */
-    {GPIOC,   NULL, NULL, 15, 0, ADCx},	/* PC15 */ 			/* OSC32_OUT */
+    [PF0] = {GPIOF,   NULL, NULL,  0, 0, ADCx},	/* PF0 */ 			/* OSC_IN */
+    [PF1] = {GPIOF,   NULL, NULL,  1, 0, ADCx},	/* PF1 */ 			/* OSC_OUT */
 
-#if defined(STM32_XL_DENSITY)
-    {GPIOF,TIMER15, NULL,  9, 1, ADCx},	/* PF9 */  
-    {GPIOF,TIMER15, NULL, 10, 2, ADCx},	/* PF10 */  
-#endif
+    [PA0] = {GPIOA, TIMER2, ADC1,  0, 1,    1},	/* PA0 */ 
+    [PA1] = {GPIOA, TIMER2, ADC1,  1, 2,    2},	/* PA1 */ 
+    [PA2] = {GPIOA, TIMER2, ADC1,  2, 3,    3},	/* PA2 */ 			/* also TIMER15 CH1 */
+    [PA3] = {GPIOA, TIMER2, ADC1,  3, 4,    4},	/* PA3 */ 			/* also TIMER15 CH2 */
+    [PA4] = {GPIOA, TIMER3, ADC2,  4, 2,    1},	/* PA4 */ 
+    [PA5] = {GPIOA,   NULL, ADC2,  5, 0,    2},	/* PA5 */ 
+    [PA6] = {GPIOA, TIMER3, ADC2,  6, 1,    3},	/* PA6 */ 			/* also TIMER16 CH1 */
+    [PA7] = {GPIOA, TIMER3, ADC2,  7, 2,    4},	/* PA7 */ 			/* also TIMER17 CH1 */
 
-/* on all density devices */
-    {GPIOF,   NULL, NULL,  0, 0, ADCx},	/* PF0 */ 			/* OSC_IN */
-    {GPIOF,   NULL, NULL,  1, 0, ADCx},	/* PF1 */ 			/* OSC_OUT */
+    [PB0] = {GPIOB, TIMER3, NULL,  0, 3, ADCx},	/* PB0 */ 
+    [PB1] = {GPIOB, TIMER3, NULL,  1, 4, ADCx},	/* PB1 */ 
+    [PB2] = {GPIOB,   NULL, ADC2,  2, 0,   12},	/* PB2 */ 
 
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
-    {GPIOC,   NULL, ADC1,  0, 0,    6},	/* PC0 */  
-    {GPIOC,   NULL, ADC1,  1, 0,    7},	/* PC1 */  
-    {GPIOC,   NULL, ADC1,  2, 0,    8},	/* PC2 */  
-    {GPIOC,   NULL, ADC1,  3, 0,    9},	/* PC3 */  
-#	if defined(STM32_XL_DENSITY)
-    {GPIOF,   NULL, ADC1,  2, 0,   10},	/* PF2 */  
-#	endif
-#endif
+    [PB10]= {GPIOB, TIMER2, NULL, 10, 3, ADCx},	/* PB10 */ 
+    [PB11]= {GPIOB, TIMER2, NULL, 11, 4, ADCx},	/* PB11 */ 
+    [PB12]= {GPIOB,   NULL, NULL, 12, 0, ADCx},	/* PB12 */ 
+    [PB13]= {GPIOB,   NULL, NULL, 13, 0, ADCx},	/* PB13 */ 
+    [PB14]= {GPIOB, TIMER15,NULL, 14, 1, ADCx},	/* PB14 */ 
+    [PB15]= {GPIOB, TIMER15,NULL, 15, 2, ADCx},	/* PB15 */ 
 
-/* on all density devices */
-    {GPIOA, TIMER2, ADC1,  0, 1,    1},	/* PA0 */ 
-    {GPIOA, TIMER2, ADC1,  1, 2,    2},	/* PA1 */ 
-    {GPIOA, TIMER2, ADC1,  2, 3,    3},	/* PA2 */ 			/* also TIMER15 CH1 */
-    {GPIOA, TIMER2, ADC1,  3, 4,    4},	/* PA3 */ 			/* also TIMER15 CH2 */
+    [PA8] = {GPIOA, TIMER1, NULL,  8, 1, ADCx},	/* PA8 */ 
+    [PA9] = {GPIOA, TIMER1, NULL,  9, 2, ADCx},	/* PA9 */ 			/* also TIMER2_CH3 */
+    [PA10]= {GPIOA, TIMER1, NULL, 10, 3, ADCx},	/* PA10 */ 			/* also TIMER2 CH4 */
+    [PA11]= {GPIOA, TIMER4, NULL, 11, 1, ADCx},	/* PA11 */ 			/* also TIMER1 CH4 */
+    [PA12]= {GPIOA, TIMER4, NULL, 12, 2, ADCx},	/* PA12 */ 			/* also TIMER16 CH1 */
+    [PA13]= {GPIOA, TIMER4, NULL, 13, 3, ADCx},	/* PA13 */ 
+    [PA14]= {GPIOA,   NULL, NULL, 14, 0, ADCx},	/* PA14 */ 
+    [PA15]= {GPIOA,   NULL, NULL, 15, 0, ADCx},	/* PA15 */ 
 
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
-    {GPIOF,   NULL, ADC1,  4, 0,    5},	/* PF4 */  
-#endif
-
-/* on all density devices */
-    {GPIOA, TIMER3, ADC2,  4, 2,    1},	/* PA4 */ 
-    {GPIOA,   NULL, ADC2,  5, 0,    2},	/* PA5 */ 
-    {GPIOA, TIMER3, ADC2,  6, 1,    3},	/* PA6 */ 			/* also TIMER16 CH1 */
-    {GPIOA, TIMER3, ADC2,  7, 2,    4},	/* PA7 */ 			/* also TIMER17 CH1 */
+    [PB3] = {GPIOB, TIMER2, NULL,  3, 2, ADCx},	/* PB3 */ 
+    [PB4] = {GPIOB, TIMER3, NULL,  4, 1, ADCx},	/* PB4 */ 			/* also TIMER16 CH1 */
+    [PB5] = {GPIOB, TIMER3, NULL,  5, 2, ADCx},	/* PB5 */ 			/* also TIMER17 CH1 */
+    [PB6] = {GPIOB, TIMER4, NULL,  6, 1, ADCx},	/* PB6 */
+    [PB7] = {GPIOB, TIMER4, NULL,  7, 2, ADCx},	/* PB7 */ 			/* also TIMER3 CH4 */
+    [PB8] = {GPIOB, TIMER4, NULL,  8, 3, ADCx},	/* PB8 */ 			/* also TIMER16 CH1 */
+    [PB9] = {GPIOB, TIMER4, NULL,  9, 4, ADCx},	/* PB9 */ 			/* also TIMER17 CH1 */
 
 #if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
-    {GPIOC,   NULL, ADC2,  4, 0,    5},	/* PC4 */  
-    {GPIOC,   NULL, ADC2,  5, 0,   11},	/* PC5 */  
-#endif
+    [PC0] = {GPIOC,   NULL, ADC1,  0, 0,    6},	/* PC0 */  
+    [PC1] = {GPIOC,   NULL, ADC1,  1, 0,    7},	/* PC1 */  
+    [PC2] = {GPIOC,   NULL, ADC1,  2, 0,    8},	/* PC2 */  
+    [PC3] = {GPIOC,   NULL, ADC1,  3, 0,    9},	/* PC3 */  
 
-/* on all density devices */
-    {GPIOB, TIMER3, NULL,  0, 3, ADCx},	/* PB0 */ 
-    {GPIOB, TIMER3, NULL,  1, 4, ADCx},	/* PB1 */ 
-    {GPIOB,   NULL, ADC2,  2, 0,   12},	/* PB2 */ 
+    [PF4] = {GPIOF,   NULL, ADC1,  4, 0,    5},	/* PF4 */  
 
-#if defined(STM32_XL_DENSITY)
-    {GPIOE,   NULL, NULL,  7, 0, ADCx},	/* PE7 */  
-    {GPIOE,   NULL, NULL,  8, 0, ADCx},	/* PE8 */  
-    {GPIOE, TIMER1, NULL,  9, 1, ADCx},	/* PE9 */  
-    {GPIOE,   NULL, NULL, 10, 0, ADCx},	/* PE10 */  
-    {GPIOE, TIMER1, NULL, 11, 2, ADCx},	/* PE11 */  
-    {GPIOE,   NULL, NULL, 12, 0, ADCx},	/* PE12 */  
-    {GPIOE, TIMER1, NULL, 13, 3, ADCx},	/* PE13 */  
-    {GPIOE, TIMER1, NULL, 14, 4, ADCx},	/* PE14 */  
-    {GPIOE,   NULL, NULL, 15, 0, ADCx},	/* PE15 */  
-#endif
+    [PC4] = {GPIOC,   NULL, ADC2,  4, 0,    5},	/* PC4 */  
+    [PC5] = {GPIOC,   NULL, ADC2,  5, 0,   11},	/* PC5 */  
+    [PC6] = {GPIOC, TIMER3, NULL,  6, 1, ADCx},	/* PC6 */
+    [PC7] = {GPIOC, TIMER3, NULL,  7, 2, ADCx},	/* PC7 */
+    [PC8] = {GPIOC, TIMER3, NULL,  8, 3, ADCx},	/* PC8 */
+    [PC9] = {GPIOC, TIMER3, NULL,  9, 4, ADCx},	/* PC9 */
+    [PC10]= {GPIOC,   NULL, NULL, 10, 0, ADCx},	/* PC10 */  
+    [PC11]= {GPIOC,   NULL, NULL, 11, 0, ADCx},	/* PC11 */  
+    [PC12]= {GPIOC,   NULL, NULL, 12, 0, ADCx},	/* PC12 */  
 
-/* on all density devices */
-    {GPIOB, TIMER2, NULL, 10, 3, ADCx},	/* PB10 */ 
-    {GPIOB, TIMER2, NULL, 11, 4, ADCx},	/* PB11 */ 
-    {GPIOB,   NULL, NULL, 12, 0, ADCx},	/* PB12 */ 
-    {GPIOB,   NULL, NULL, 13, 0, ADCx},	/* PB13 */ 
-    {GPIOB, TIMER15,NULL, 14, 1, ADCx},	/* PB14 */ 
-    {GPIOB, TIMER15,NULL, 15, 2, ADCx},	/* PB15 */ 
-
-#if defined(STM32_XL_DENSITY)
-    {GPIOD,   NULL, NULL,  8, 0, ADCx},	/* PD8 */  
-    {GPIOD,   NULL, NULL,  9, 0, ADCx},	/* PD0 */  
-    {GPIOD,   NULL, NULL, 10, 0, ADCx},	/* PD10 */  
-    {GPIOD,   NULL, NULL, 11, 0, ADCx},	/* PD11 */  
-    {GPIOD, TIMER4, NULL, 12, 1, ADCx},	/* PD12 */  
-    {GPIOD, TIMER4, NULL, 13, 2, ADCx},	/* PD13 */  
-    {GPIOD, TIMER4, NULL, 14, 3, ADCx},	/* PD14 */  
-    {GPIOD, TIMER4, NULL, 15, 4, ADCx},	/* PD15 */  
-#endif
-
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
-    {GPIOC, TIMER3, NULL,  6, 1, ADCx},	/* PC6 */
-    {GPIOC, TIMER3, NULL,  7, 2, ADCx},	/* PC7 */
-    {GPIOC, TIMER3, NULL,  8, 3, ADCx},	/* PC8 */
-    {GPIOC, TIMER3, NULL,  9, 4, ADCx},	/* PC9 */
-#endif
-
-/* on all density devices */
-    {GPIOA, TIMER1, NULL,  8, 1, ADCx},	/* PA8 */ 
-    {GPIOA, TIMER1, NULL,  9, 2, ADCx},	/* PA9 */ 			/* also TIMER2_CH3 */
-    {GPIOA, TIMER1, NULL, 10, 3, ADCx},	/* PA10 */ 			/* also TIMER2 CH4 */
-    {GPIOA, TIMER4, NULL, 11, 1, ADCx},	/* PA11 */ 			/* also TIMER1 CH4 */
-    {GPIOA, TIMER4, NULL, 12, 2, ADCx},	/* PA12 */ 			/* also TIMER16 CH1 */
-    {GPIOA, TIMER4, NULL, 13, 3, ADCx},	/* PA13 */ 
-#if defined(STM32_XL_DENSITY)
-    {GPIOF, TIMER4, NULL,  6, 4, ADCx},	/* PF6 */  
-#endif
-    {GPIOA,   NULL, NULL, 14, 0, ADCx},	/* PA14 */ 
-    {GPIOA,   NULL, NULL, 15, 0, ADCx},	/* PA15 */ 
-
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
-    {GPIOC,   NULL, NULL, 10, 0, ADCx},	/* PC10 */  
-    {GPIOC,   NULL, NULL, 11, 0, ADCx},	/* PC11 */  
-    {GPIOC,   NULL, NULL, 12, 0, ADCx},	/* PC12 */  
+    [PD2] = {GPIOD,   NULL, NULL,  2, 0, ADCx},	/* PD2 */  
 
 #	if defined(STM32_XL_DENSITY)
-    {GPIOD,   NULL, NULL,  0, 0, ADCx},	/* PD0 */  
-    {GPIOD,   NULL, NULL,  1, 0, ADCx},	/* PD1 */  
-#	endif
-    {GPIOD,   NULL, NULL,  2, 0, ADCx},	/* PD2 */  
-#	if defined(STM32_XL_DENSITY)
-    {GPIOD,   NULL, NULL,  3, 0, ADCx},	/* PD3 */  
-    {GPIOD, TIMER2, NULL,  4, 2, ADCx},	/* PD4 */  
-    {GPIOD,   NULL, NULL,  5, 0, ADCx},	/* PD5 */  
-    {GPIOD, TIMER2, NULL,  6, 4, ADCx},	/* PD6 */  
-    {GPIOD, TIMER2, NULL,  7, 3, ADCx},	/* PD7 */  
-#	endif
-#endif
+    [PE2] = {GPIOE, TIMER3, NULL,  2, 1, ADCx},	/* PE2 */  
+    [PE3] = {GPIOE, TIMER3, NULL,  3, 2, ADCx},	/* PE3 */  
+    [PE4] = {GPIOE, TIMER3, NULL,  4, 3, ADCx},	/* PE4 */  
+    [PE5] = {GPIOE, TIMER3, NULL,  5, 4, ADCx},	/* PE5 */  
+    [PE6] = {GPIOE,   NULL, NULL,  6, 0, ADCx},	/* PE6 */  
 
-/* on all density devices */
-    {GPIOB, TIMER2, NULL,  3, 2, ADCx},	/* PB3 */ 
-    {GPIOB, TIMER3, NULL,  4, 1, ADCx},	/* PB4 */ 			/* also TIMER16 CH1 */
-    {GPIOB, TIMER3, NULL,  5, 2, ADCx},	/* PB5 */ 			/* also TIMER17 CH1 */
-    {GPIOB, TIMER4, NULL,  6, 1, ADCx},	/* PB6 */
-    {GPIOB, TIMER4, NULL,  7, 2, ADCx},	/* PB7 */ 			/* also TIMER3 CH4 */
-    {GPIOB, TIMER4, NULL,  8, 3, ADCx},	/* PB8 */ 			/* also TIMER16 CH1 */
-    {GPIOB, TIMER4, NULL,  9, 4, ADCx},	/* PB9 */ 			/* also TIMER17 CH1 */
+    [PF9] = {GPIOF,TIMER15, NULL,  9, 1, ADCx},	/* PF9 */  
+    [PF10]= {GPIOF,TIMER15, NULL, 10, 2, ADCx},	/* PF10 */  
 
-#if defined(STM32_XL_DENSITY)
-    {GPIOE,TIMER16, NULL,  0, 1, ADCx},	/* PE0 */  
-    {GPIOE,TIMER17, NULL,  1, 1, ADCx},	/* PE1 */  
+    [PF2] = {GPIOF,   NULL, ADC1,  2, 0,   10},	/* PF2 */  
+
+    [PE7] = {GPIOE,   NULL, NULL,  7, 0, ADCx},	/* PE7 */  
+    [PE8] = {GPIOE,   NULL, NULL,  8, 0, ADCx},	/* PE8 */  
+    [PE9] = {GPIOE, TIMER1, NULL,  9, 1, ADCx},	/* PE9 */  
+    [PE10]= {GPIOE,   NULL, NULL, 10, 0, ADCx},	/* PE10 */  
+    [PE11]= {GPIOE, TIMER1, NULL, 11, 2, ADCx},	/* PE11 */  
+    [PE12]= {GPIOE,   NULL, NULL, 12, 0, ADCx},	/* PE12 */  
+    [PE13]= {GPIOE, TIMER1, NULL, 13, 3, ADCx},	/* PE13 */  
+    [PE14]= {GPIOE, TIMER1, NULL, 14, 4, ADCx},	/* PE14 */  
+    [PE15]= {GPIOE,   NULL, NULL, 15, 0, ADCx},	/* PE15 */  
+
+    [PD8] = {GPIOD,   NULL, NULL,  8, 0, ADCx},	/* PD8 */  
+    [PD9] = {GPIOD,   NULL, NULL,  9, 0, ADCx},	/* PD0 */  
+    [PD10]= {GPIOD,   NULL, NULL, 10, 0, ADCx},	/* PD10 */  
+    [PD11]= {GPIOD,   NULL, NULL, 11, 0, ADCx},	/* PD11 */  
+    [PD12]= {GPIOD, TIMER4, NULL, 12, 1, ADCx},	/* PD12 */  
+    [PD13]= {GPIOD, TIMER4, NULL, 13, 2, ADCx},	/* PD13 */  
+    [PD14]= {GPIOD, TIMER4, NULL, 14, 3, ADCx},	/* PD14 */  
+    [PD15]= {GPIOD, TIMER4, NULL, 15, 4, ADCx},	/* PD15 */  
+
+    [PF6] = {GPIOF, TIMER4, NULL,  6, 4, ADCx},	/* PF6 */  
+
+    [PD0] = {GPIOD,   NULL, NULL,  0, 0, ADCx},	/* PD0 */  
+    [PD1] = {GPIOD,   NULL, NULL,  1, 0, ADCx},	/* PD1 */  
+
+    [PD3] = {GPIOD,   NULL, NULL,  3, 0, ADCx},	/* PD3 */  
+    [PD4] = {GPIOD, TIMER2, NULL,  4, 2, ADCx},	/* PD4 */  
+    [PD5] = {GPIOD,   NULL, NULL,  5, 0, ADCx},	/* PD5 */  
+    [PD6] = {GPIOD, TIMER2, NULL,  6, 4, ADCx},	/* PD6 */  
+    [PD7] = {GPIOD, TIMER2, NULL,  7, 3, ADCx},	/* PD7 */  
+
+    [PE0] = {GPIOE,TIMER16, NULL,  0, 1, ADCx},	/* PE0 */  
+    [PE1] = {GPIOE,TIMER17, NULL,  1, 1, ADCx},	/* PE1 */  
+#	endif
 #endif
 };
 

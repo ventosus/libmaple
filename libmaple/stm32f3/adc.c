@@ -254,15 +254,19 @@ void adc_set_exttrig(const adc_dev *dev, adc_exttrig_mode mode) {
 void adc_set_prescaler(adc_prescaler pre) {
 		if (pre & 0x10) { /* PLL is used as clock source */
 			ADC12_BASE->CCR &= ~ADC_CCR_CKMODE;
+#if STM32_F3_LINE == STM32_F3_LINE_303
 			ADC34_BASE->CCR &= ~ADC_CCR_CKMODE;
+#endif
 
 			uint32 cfgr2 = RCC_BASE->CFGR2;
 
 			cfgr2 &= ~RCC_CFGR2_ADC12PRES; // clear register
 			cfgr2 |= (uint32)pre << RCC_CFGR2_ADC12PRES_SHIFT; // set register
 
+#if STM32_F3_LINE == STM32_F3_LINE_303
 			cfgr2 &= ~RCC_CFGR2_ADC34PRES; // clear register
 			cfgr2 |= (uint32)pre << RCC_CFGR2_ADC34PRES_SHIFT; // set register
+#endif
 
 			RCC_BASE->CFGR2 = cfgr2;
 		} else { /* AHB bus is used as clock source */
@@ -274,10 +278,12 @@ void adc_set_prescaler(adc_prescaler pre) {
 			tmp |= pre << ADC_CCR_CKMODE_SHIFT;
 			ADC12_BASE->CCR = tmp;
 
+#if STM32_F3_LINE == STM32_F3_LINE_303
 			tmp = ADC34_BASE->CCR;
 			tmp &= ~ADC_CCR_CKMODE;
 			tmp |= pre << ADC_CCR_CKMODE_SHIFT;
 			ADC34_BASE->CCR = tmp;
+#endif
 		}
 }
 
@@ -295,7 +301,11 @@ void adc_config_gpio(const adc_dev *ignored, gpio_dev *gdev, uint8 bit) {
 }
 
 void adc_enable_single_swstart(const adc_dev *dev) {
+#if STM32_F3_LINE == STM32_F3_LINE_303
 		if ( (dev == ADC1) || (dev == ADC3) )
+#else
+		if (dev == ADC1)
+#endif
 			adc_init(dev); /* FIXME hack needed for wirish, as master and slave ADC share the same reset register */
     adc_set_exttrig(dev, ADC_EXTTRIG_MODE_SOFTWARE);
 		adc_regulator_enable(dev);
@@ -357,12 +367,14 @@ void adc_regulator_disable(const adc_dev *dev) {
 void _adc_enable_dev_irq(const adc_dev *dev) {
 		if ( (dev == ADC1) || (dev == ADC2) )
 			nvic_irq_enable(NVIC_ADC1_2);
+#if STM32_F3_LINE == STM32_F3_LINE_303
 		else {
 			if (dev == ADC3)
 				nvic_irq_enable(NVIC_ADC3);
 			else // dev == ADC4
 				nvic_irq_enable(NVIC_ADC4);
 		}
+#endif
 }
 
 /* IRQ handler for adc_attach_interrupt() */
