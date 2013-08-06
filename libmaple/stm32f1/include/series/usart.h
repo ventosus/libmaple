@@ -87,6 +87,14 @@ extern struct usart_dev *UART5;
  * F1-only register bit definitions.
  */
 
+/* Status register */
+
+/** Clear to send bit */
+#define USART_SR_CTS_BIT                9
+
+/** Clear to send mask */
+#define USART_SR_CTS                    BIT(USART_SR_CTS_BIT)
+
 /* Control register 1 */
 
 /** USART enable bit */

@@ -52,8 +52,6 @@ extern "C"{
 
 /* Status register */
 
-/** Clear to send bit */
-#define USART_SR_CTS_BIT                9
 /** Line break detection bit */
 #define USART_SR_LBD_BIT                8
 /** Transmit data register empty bit */
@@ -84,8 +82,6 @@ extern "C"{
 /** Parity error bit */
 #define USART_SR_PE_BIT                 0
 
-/** Clear to send mask */
-#define USART_SR_CTS                    BIT(USART_SR_CTS_BIT)
 /** Line break detected mask */
 #define USART_SR_LBD                    BIT(USART_SR_LBD_BIT)
 /** Transmit data register empty mask */

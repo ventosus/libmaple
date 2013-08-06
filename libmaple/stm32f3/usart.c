@@ -32,6 +32,7 @@
 
 #include <libmaple/usart.h>
 #include <libmaple/gpio.h>
+#include <libmaple/rcc.h>
 #include "usart_private.h"
 
 /*
@@ -104,13 +105,20 @@ void usart_config_gpios_async(usart_dev *udev,
                               gpio_dev *tx_dev, uint8 tx,
                               unsigned flags) {
     gpio_af af = usart_get_af(udev);
-    gpio_set_modef(rx_dev, rx, GPIO_MODE_AF, 0);
-    gpio_set_modef(tx_dev, tx, GPIO_MODE_AF, 0);
+    gpio_set_modef(rx_dev, rx, GPIO_MODE_AF, GPIO_MODEF_PUPD_NONE);
+    //gpio_set_modef(tx_dev, tx, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP);
+    gpio_set_modef(tx_dev, tx, GPIO_MODE_AF, GPIO_MODEF_TYPE_OD);
     gpio_set_af(rx_dev, rx, af);
     gpio_set_af(tx_dev, tx, af);
 }
 
 void usart_set_baud_rate(usart_dev *dev, uint32 clock_speed, uint32 baud) {
+    /* Figure out the clock speed, if the user doesn't give one. */
+    if (clock_speed == 0) {
+        clock_speed = _usart_clock_freq(dev);
+    }
+    ASSERT(clock_speed);
+
 		uint32 divider = clock_speed / baud;
 		uint32 tmpreg = clock_speed % baud;
 		/* round divider : if fractional part i greater than 0.5 increment divider */
@@ -123,7 +131,7 @@ uint32 usart_tx(usart_dev *dev, const uint8 *buf, uint32 len) {
     usart_reg_map *regs = dev->regs;
     uint32 txed = 0;
     while ((regs->SR & USART_SR_TXE) && (txed < len)) {
-        regs->TDR = buf[txed++];
+        regs->TDR = buf[txed++] & USART_TDR_TDR;
     }
     return txed;
 }
@@ -172,10 +180,10 @@ static __always_inline void usart_irq(ring_buffer *rb, usart_reg_map *regs) {
 #ifdef USART_SAFE_INSERT
     /* If the buffer is full and the user defines USART_SAFE_INSERT,
      * ignore new bytes. */
-    rb_safe_insert(rb, (uint8)regs->RDR);
+    rb_safe_insert(rb, regs->RDR & USART_RDR_RDR);
 #else
     /* By default, push bytes around in the ring buffer. */
-    rb_push_insert(rb, (uint8)regs->RDR);
+    rb_push_insert(rb, regs->RDR & USART_RDR_RDR);
 #endif
 }
 

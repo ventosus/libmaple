@@ -48,19 +48,16 @@ typedef struct usart_reg_map {
     __io uint32 CR1;            /**< Control register 1 */
     __io uint32 CR2;            /**< Control register 2 */
     __io uint32 CR3;            /**< Control register 3 */
-    __io uint16 BRR;            /**< Baud rate register */
-		uint16 RESERVED1;						/**< Reserved, 0x0E */
-    __io uint16 GTPR;           /**< Guard time and prescaler register */
-		uint16 RESERVED2;						/**< Reserved, 0x12 */
+    __io uint32 BRR;            /**< Baud rate register */
+    __io uint32 GTPR;           /**< Guard time and prescaler register */
     __io uint32 RTOR;           /**< Receiver timeout register */
-    __io uint16 RQR;            /**< Request register */
-		uint16 RESERVED3;						/**< Reserved, 0x1A */
+    __io uint32 RQR;            /**< Request register */
     __io uint32 SR;             /**< ISR Interrupt and status register */
     __io uint32 ICR;            /**< Interrupt clear register */
     __io uint16 RDR;            /**< Receive data register */
-		uint16 RESERVED4;						/**< Reserved, 0x26 */
+		uint16 RESERVED1;
     __io uint16 TDR;            /**< Transmit data register */
-		uint16 RESERVED5;						/**< Reserved, 0x2A */
+		uint16 RESERVED2;
 } usart_reg_map;
 
 /*
@@ -201,33 +198,33 @@ extern struct usart_dev *UART5;
 
 /* Interrupt and status register */
 // common register bits with other STM32 series are defined as USART_SR_* for compatibility 
-#define USART_ISR_REACK_BIT					22
-#define USART_ISR_TEACK_BIT					21
-#define USART_ISR_WUF_BIT						20
-#define USART_ISR_RWU_BIT						19
-#define USART_ISR_SBKF_BIT					18
-#define USART_ISR_CMF_BIT						17
-#define USART_ISR_BUSY_BIT					16
-#define USART_ISR_ABRF_BIT					15
-#define USART_ISR_ABRE_BIT					14
-#define USART_ISR_EOBF_BIT					12
-#define USART_ISR_RTOF_BIT					11
-#define USART_ISR_CTS_BIT						10
-#define USART_ISR_CTSIF_BIT					9
+#define USART_SR_REACK_BIT					22
+#define USART_SR_TEACK_BIT					21
+#define USART_SR_WUF_BIT						20
+#define USART_SR_RWU_BIT						19
+#define USART_SR_SBKF_BIT						18
+#define USART_SR_CMF_BIT						17
+#define USART_SR_BUSY_BIT						16
+#define USART_SR_ABRF_BIT						15
+#define USART_SR_ABRE_BIT						14
+#define USART_SR_EOBF_BIT						12
+#define USART_SR_RTOF_BIT						11
+#define USART_SR_CTS_BIT						10
+#define USART_SR_CTSIF_BIT					9
 
-#define USART_ISR_REACK							(1UL << USART_ISR_REACK_BIT)
-#define USART_ISR_TEACK        	    (1UL << USART_ISR_TEACK_BIT)
-#define USART_ISR_WUF          	    (1UL << USART_ISR_WUF_BIT)
-#define USART_ISR_RWU          	    (1UL << USART_ISR_RWU_BIT)
-#define USART_ISR_SBKF         	    (1UL << USART_ISR_SBKF_BIT)
-#define USART_ISR_CMF          	    (1UL << USART_ISR_CMF_BIT)
-#define USART_ISR_BUSY         	    (1UL << USART_ISR_BUSY_BIT)
-#define USART_ISR_ABRF         	    (1UL << USART_ISR_ABRF_BIT)
-#define USART_ISR_ABRE         	    (1UL << USART_ISR_ABRE_BIT)
-#define USART_ISR_EOBF         	    (1UL << USART_ISR_EOBF_BIT)
-#define USART_ISR_RTOF         	    (1UL << USART_ISR_RTOF_BIT)
-#define USART_ISR_CTS	        	    (1UL << USART_ISR_CTS_BIT)
-#define USART_ISR_CTSIF        	    (1UL << USART_ISR_CTSIF_BIT)
+#define USART_SR_REACK							(1UL << USART_ISR_REACK_BIT)
+#define USART_SR_TEACK        	    (1UL << USART_ISR_TEACK_BIT)
+#define USART_SR_WUF          	    (1UL << USART_ISR_WUF_BIT)
+#define USART_SR_RWU          	    (1UL << USART_ISR_RWU_BIT)
+#define USART_SR_SBKF         	    (1UL << USART_ISR_SBKF_BIT)
+#define USART_SR_CMF          	    (1UL << USART_ISR_CMF_BIT)
+#define USART_SR_BUSY         	    (1UL << USART_ISR_BUSY_BIT)
+#define USART_SR_ABRF         	    (1UL << USART_ISR_ABRF_BIT)
+#define USART_SR_ABRE         	    (1UL << USART_ISR_ABRE_BIT)
+#define USART_SR_EOBF         	    (1UL << USART_ISR_EOBF_BIT)
+#define USART_SR_RTOF         	    (1UL << USART_ISR_RTOF_BIT)
+#define USART_SR_CTS	        	    (1UL << USART_ISR_CTS_BIT)
+#define USART_SR_CTSIF        	    (1UL << USART_ISR_CTSIF_BIT)
 
 /* Interrupt clear register */
 #define USART_ICR_WUFCF_BIT					20
@@ -259,13 +256,13 @@ extern struct usart_dev *UART5;
 /* Receive data register */
 #define USART_RDR_RDR_SHIFT					0
 
-#define USART_RDR_RDR								(0xFF << USART_RDR_RDR_SHFIT)
+#define USART_RDR_RDR								(0x1FF << USART_RDR_RDR_SHIFT)
 
 
 /* Transmit data register */
 #define USART_TDR_TDR_SHIFT					0
 
-#define USART_TDR_TDR								(0xFF << USART_TDR_TDR_SHFIT)
+#define USART_TDR_TDR								(0x1FF << USART_TDR_TDR_SHIFT)
 
 /*
  * Routines
