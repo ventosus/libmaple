@@ -25,7 +25,7 @@
 *****************************************************************************/
 
 /**
- * @file libmaple/include/libmaple/dsp.h
+ * @file libmaple/include/libmaple/simd.h
  * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
  * @brief Convenience macros for the digital signal processing (DSP)
  *				instruction set of the ARM Cortex M4 microcontroller.
@@ -70,25 +70,6 @@ extern "C"{
 
 /* General data processing instructions */
 #define __rev16(A)				DSP1("REV16", A)
-//TODO
-
-/* Multiply and divide instructions */
-//TODO
-
-/* Saturating instructions */
-//TODO
-
-/* Packing and unpacking instructions */
-//TODO
-
-/* Bitfield instructions */
-//TODO
-
-/* Floating-point instructions */
-//TODO
-
-/* Miscellaneous instructions */
-//TODO
 
 /* SIMD instructions (single instruction multiple data) */
 #define __sadd16(A, B)		DSP2("SADD16", A, B)
@@ -120,9 +101,6 @@ extern "C"{
 
 #define __usad8(A, B)			DSP2("USAD8", A, B)
 #define __usada8(A, B, C)	DSP3("USADA8", A, B, C)
-
-/* MAC instructions (multiply and accumulate) */
-/* TODO */
 
 #ifdef __cplusplus
 }
