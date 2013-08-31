@@ -28,6 +28,7 @@ cSRCS_$(d) += syscfg.c
 cSRCS_$(d) += fpu.c
 cSRCS_$(d) += comp.c
 cSRCS_$(d) += opamp.c
+cSRCS_$(d) += bkp.c
 
 sFILES_$(d) := $(sSRCS_$(d):%=$(d)/%)
 cFILES_$(d) := $(cSRCS_$(d):%=$(d)/%)

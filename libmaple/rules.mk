@@ -33,6 +33,7 @@ cSRCS_$(d) += util.c
 sSRCS_$(d) := exc.S
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),stm32f1 stm32f3)) # TODO port I2C to F2
 cSRCS_$(d) += i2c.c
+cSRCS_$(d) += bkp.c
 endif
 
 cFILES_$(d) := $(cSRCS_$(d):%=$(d)/%)

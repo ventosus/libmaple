@@ -2,6 +2,7 @@
  * The MIT License
  *
  * Copyright (c) 2010 LeafLabs, LLC.
+ * Copyright (c) 2013 OpenMusicKontrollers.
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,7 +27,8 @@
 
 /**
  * @file libmaple/include/libmaple/bkp.h
- * @brief Backup register support (STM32F1 only).
+ * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
+ * @brief Backup register support (STM32F1 & STM32F3 only).
  */
 
 #ifndef _LIBMAPLE_BKP_H_
@@ -38,125 +40,57 @@ extern "C" {
 
 #include <libmaple/libmaple.h>
 
-#if defined(STM32_MEDIUM_DENSITY)
-#define BKP_NR_DATA_REGS 10
-#elif defined(STM32_HIGH_DENSITY)
-#define BKP_NR_DATA_REGS 42
-#endif
-
-/** Backup peripheral register map type. */
-typedef struct bkp_reg_map {
-    const uint32 RESERVED1;     ///< Reserved
-    __io uint32 DR1;            ///< Data register 1
-    __io uint32 DR2;            ///< Data register 2
-    __io uint32 DR3;            ///< Data register 3
-    __io uint32 DR4;            ///< Data register 4
-    __io uint32 DR5;            ///< Data register 5
-    __io uint32 DR6;            ///< Data register 6
-    __io uint32 DR7;            ///< Data register 7
-    __io uint32 DR8;            ///< Data register 8
-    __io uint32 DR9;            ///< Data register 9
-    __io uint32 DR10;           ///< Data register 10
-    __io uint32 RTCCR;          ///< RTC control register
-    __io uint32 CR;             ///< Control register
-    __io uint32 CSR;            ///< Control and status register
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
-    const uint32 RESERVED2;     ///< Reserved
-    const uint32 RESERVED3;     ///< Reserved
-    __io uint32 DR11;           ///< Data register 11
-    __io uint32 DR12;           ///< Data register 12
-    __io uint32 DR13;           ///< Data register 13
-    __io uint32 DR14;           ///< Data register 14
-    __io uint32 DR15;           ///< Data register 15
-    __io uint32 DR16;           ///< Data register 16
-    __io uint32 DR17;           ///< Data register 17
-    __io uint32 DR18;           ///< Data register 18
-    __io uint32 DR19;           ///< Data register 19
-    __io uint32 DR20;           ///< Data register 20
-    __io uint32 DR21;           ///< Data register 21
-    __io uint32 DR22;           ///< Data register 22
-    __io uint32 DR23;           ///< Data register 23
-    __io uint32 DR24;           ///< Data register 24
-    __io uint32 DR25;           ///< Data register 25
-    __io uint32 DR26;           ///< Data register 26
-    __io uint32 DR27;           ///< Data register 27
-    __io uint32 DR28;           ///< Data register 28
-    __io uint32 DR29;           ///< Data register 29
-    __io uint32 DR30;           ///< Data register 30
-    __io uint32 DR31;           ///< Data register 31
-    __io uint32 DR32;           ///< Data register 32
-    __io uint32 DR33;           ///< Data register 33
-    __io uint32 DR34;           ///< Data register 34
-    __io uint32 DR35;           ///< Data register 35
-    __io uint32 DR36;           ///< Data register 36
-    __io uint32 DR37;           ///< Data register 37
-    __io uint32 DR38;           ///< Data register 38
-    __io uint32 DR39;           ///< Data register 39
-    __io uint32 DR40;           ///< Data register 40
-    __io uint32 DR41;           ///< Data register 41
-    __io uint32 DR42;           ///< Data register 42
-#endif
-} bkp_reg_map;
-
-/** Backup peripheral register map base pointer. */
-#define BKP_BASE                        ((struct bkp_reg_map*)0x40006C00)
+#include <series/bkp.h>
 
 /** Backup peripheral device type. */
 typedef struct bkp_dev {
     bkp_reg_map *regs; /**< Register map */
 } bkp_dev;
 
-extern const bkp_dev *BKP;
+extern const struct bkp_dev *BKP;
 
 /*
- * Register bit definitions
+ * this function needs to be implemented for each series separately
  */
+extern inline __io uint32* bkp_data_register(uint8 reg);
 
-/* Data Registers */
-
-#define BKP_DR_D                        0xFFFF
-
-/* RTC Clock Calibration Register */
-
-#define BKP_RTCCR_ASOS_BIT              9
-#define BKP_RTCCR_ASOE_BIT              8
-#define BKP_RTCCR_CCO_BIT               7
-
-#define BKP_RTCCR_ASOS                  BIT(BKP_RTCCR_ASOS_BIT)
-#define BKP_RTCCR_ASOE                  BIT(BKP_RTCCR_ASOE_BIT)
-#define BKP_RTCCR_CCO                   BIT(BKP_RTCCR_CCO_BIT)
-#define BKP_RTCCR_CAL                   0x7F
-
-/* Backup control register */
-
-#define BKP_CR_TPAL_BIT                 1
-#define BKP_CR_TPE_BIT                  0
-
-#define BKP_CR_TPAL                     BIT(BKP_CR_TPAL_BIT)
-#define BKP_CR_TPE                      BIT(BKP_CR_TPE_BIT)
-
-/* Backup control/status register */
-
-#define BKP_CSR_TIF_BIT                 9
-#define BKP_CSR_TEF_BIT                 8
-#define BKP_CSR_TPIE_BIT                2
-#define BKP_CSR_CTI_BIT                 1
-#define BKP_CSR_CTE_BIT                 0
-
-#define BKP_CSR_TIF                     BIT(BKP_CSR_TIF_BIT)
-#define BKP_CSR_TEF                     BIT(BKP_CSR_TEF_BIT)
-#define BKP_CSR_TPIE                    BIT(BKP_CSR_TPIE_BIT)
-#define BKP_CSR_CTI                     BIT(BKP_CSR_CTI_BIT)
-#define BKP_CSR_CTE                     BIT(BKP_CSR_CTE_BIT)
-
-/*
- * Convenience functions
+/**
+ * @brief Initialize backup interface.
+ *
+ * Enables the power and backup interface clocks, and resets the
+ * backup device.
  */
-
 void bkp_init(void);
+
+/**
+ * Enable write access to the backup registers.  Backup interface must
+ * be initialized for subsequent register writes to work.
+ * @see bkp_init()
+ */
 void bkp_enable_writes(void);
+
+/**
+ * Disable write access to the backup registers.
+ */
 void bkp_disable_writes(void);
+
+/**
+ * Read a value from given backup data register.
+ * @param reg Data register to read, from 1 to BKP_NR_DATA_REGS (10 on
+ *            medium-density devices, 42 on high-density devices).
+ */
 uint16 bkp_read(uint8 reg);
+
+/**
+ * @brief Write a value to given data register.
+ *
+ * Write access to backup registers must be enabled.
+ *
+ * @param reg Data register to write, from 1 to BKP_NR_DATA_REGS (10
+ *            on medium-density devices, 42 on high-density devices).
+ * @param val Value to write into the register.
+ * @see bkp_enable_writes()
+ */
 void bkp_write(uint8 reg, uint16 val);
 
 #ifdef __cplusplus

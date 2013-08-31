@@ -26,41 +26,44 @@
  *****************************************************************************/
 
 /**
- * @file libmaple/stm32f1/bkp.c
+ * @file libmaple/bkp.c
  * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief STM32F1 Backup register support.
+ * @brief Backup register support (STM32F1 & STM32F3 only).
  */
 
-#include <libmaple/bkp.h>
 #include <libmaple/pwr.h>
-#include <libmaple/rcc.h>
+#include <libmaple/bkp.h>
+#include <libmaple/bitband.h>
 
-void bkp_init(void) {
-    /* Don't call pwr_init(), or you'll reset the device.  We just
-     * need the clock. */
-    rcc_clk_enable(RCC_PWR);
-    rcc_clk_enable(RCC_BKP);
-    rcc_reset_dev(RCC_BKP);
+bkp_dev bkp = {
+    .regs = BKP_BASE,
+};
+/** Backup device. */
+const bkp_dev *BKP = &bkp;
+
+void bkp_enable_writes(void) {
+    *bb_perip(&PWR_BASE->CR, PWR_CR_DBP_BIT) = 1;
 }
-/*
- * Data register memory layout is not contiguous. It's split up from
- * 1--NR_LOW_DRS, beginning at BKP_BASE->DR1, through to
- * (NR_LOW_DRS+1)--BKP_NR_DATA_REGS, beginning at BKP_BASE->DR11.
- */
-#define NR_LOW_DRS 10
 
-inline __io uint32* bkp_data_register(uint8 reg) {
-    if (reg < 1 || reg > BKP_NR_DATA_REGS) {
+void bkp_disable_writes(void) {
+    *bb_perip(&PWR_BASE->CR, PWR_CR_DBP_BIT) = 0;
+}
+
+uint16 bkp_read(uint8 reg) {
+    __io uint32* dr = bkp_data_register(reg);
+    if (!dr) {
+        ASSERT(0);                  /* nonexistent register */
         return 0;
     }
-
-#if BKP_NR_DATA_REGS == NR_LOW_DRS
-    return (uint32*)BKP_BASE + reg;
-#else
-    if (reg <= NR_LOW_DRS) {
-        return (uint32*)BKP_BASE + reg;
-    } else {
-        return (uint32*)&(BKP_BASE->DR11) + (reg - NR_LOW_DRS - 1);
-    }
-#endif
+    return (uint16)*dr;
 }
+
+void bkp_write(uint8 reg, uint16 val) {
+    __io uint32* dr = bkp_data_register(reg);
+    if (!dr) {
+        ASSERT(0);                  /* nonexistent register */
+        return;
+    }
+    *dr = (uint32)val;
+}
+

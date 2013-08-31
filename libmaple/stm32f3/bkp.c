@@ -26,9 +26,9 @@
  *****************************************************************************/
 
 /**
- * @file libmaple/stm32f1/bkp.c
+ * @file libmaple/stm32f3/bkp.c
  * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief STM32F1 Backup register support.
+ * @brief STM32F3 backup register support.
  */
 
 #include <libmaple/bkp.h>
@@ -39,28 +39,11 @@ void bkp_init(void) {
     /* Don't call pwr_init(), or you'll reset the device.  We just
      * need the clock. */
     rcc_clk_enable(RCC_PWR);
-    rcc_clk_enable(RCC_BKP);
-    rcc_reset_dev(RCC_BKP);
 }
-/*
- * Data register memory layout is not contiguous. It's split up from
- * 1--NR_LOW_DRS, beginning at BKP_BASE->DR1, through to
- * (NR_LOW_DRS+1)--BKP_NR_DATA_REGS, beginning at BKP_BASE->DR11.
- */
-#define NR_LOW_DRS 10
 
 inline __io uint32* bkp_data_register(uint8 reg) {
-    if (reg < 1 || reg > BKP_NR_DATA_REGS) {
-        return 0;
-    }
-
-#if BKP_NR_DATA_REGS == NR_LOW_DRS
-    return (uint32*)BKP_BASE + reg;
-#else
-    if (reg <= NR_LOW_DRS) {
-        return (uint32*)BKP_BASE + reg;
-    } else {
-        return (uint32*)&(BKP_BASE->DR11) + (reg - NR_LOW_DRS - 1);
-    }
-#endif
+    if (reg < 1 || reg > BKP_NR_DATA_REGS)
+			return NULL;
+		else
+			return (uint32*)BKP_BASE + (reg-1); // regs are accessed from 1-16
 }

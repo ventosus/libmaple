@@ -26,41 +26,37 @@
  *****************************************************************************/
 
 /**
- * @file libmaple/stm32f1/bkp.c
+ * @file libmaple/stm32f3/include/series/bkp.h
  * @author F3-port by Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief STM32F1 Backup register support.
+ * @brief STM32F3 backup register support.
  */
 
-#include <libmaple/bkp.h>
-#include <libmaple/pwr.h>
-#include <libmaple/rcc.h>
+#ifndef _LIBMAPLE_STM32F3_BKP_H_
+#define _LIBMAPLE_STM32F3_BKP_H_
 
-void bkp_init(void) {
-    /* Don't call pwr_init(), or you'll reset the device.  We just
-     * need the clock. */
-    rcc_clk_enable(RCC_PWR);
-    rcc_clk_enable(RCC_BKP);
-    rcc_reset_dev(RCC_BKP);
-}
-/*
- * Data register memory layout is not contiguous. It's split up from
- * 1--NR_LOW_DRS, beginning at BKP_BASE->DR1, through to
- * (NR_LOW_DRS+1)--BKP_NR_DATA_REGS, beginning at BKP_BASE->DR11.
- */
-#define NR_LOW_DRS 10
+#define BKP_NR_DATA_REGS 16
 
-inline __io uint32* bkp_data_register(uint8 reg) {
-    if (reg < 1 || reg > BKP_NR_DATA_REGS) {
-        return 0;
-    }
+/** Backup peripheral register map type. */
+typedef struct bkp_reg_map {
+    __io uint32 DR0;            ///< Data register 0
+    __io uint32 DR1;            ///< Data register 1
+    __io uint32 DR2;            ///< Data register 2
+    __io uint32 DR3;            ///< Data register 3
+    __io uint32 DR4;            ///< Data register 4
+    __io uint32 DR5;            ///< Data register 5
+    __io uint32 DR6;            ///< Data register 6
+    __io uint32 DR7;            ///< Data register 7
+    __io uint32 DR8;            ///< Data register 8
+    __io uint32 DR9;            ///< Data register 9
+    __io uint32 DR10;           ///< Data register 10
+    __io uint32 DR11;           ///< Data register 11
+    __io uint32 DR12;           ///< Data register 12
+    __io uint32 DR13;           ///< Data register 13
+    __io uint32 DR14;           ///< Data register 14
+    __io uint32 DR15;           ///< Data register 15
+} bkp_reg_map;
 
-#if BKP_NR_DATA_REGS == NR_LOW_DRS
-    return (uint32*)BKP_BASE + reg;
-#else
-    if (reg <= NR_LOW_DRS) {
-        return (uint32*)BKP_BASE + reg;
-    } else {
-        return (uint32*)&(BKP_BASE->DR11) + (reg - NR_LOW_DRS - 1);
-    }
+/** Backup peripheral register map base pointer. */
+#define BKP_BASE                        ((struct bkp_reg_map*)0x40002850) //is part of RTC memory map
+
 #endif
-}
