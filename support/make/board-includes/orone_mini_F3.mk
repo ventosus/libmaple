@@ -3,5 +3,5 @@ PRODUCT_ID := 0003
 ERROR_LED_PORT := GPIOB
 ERROR_LED_PIN  := 1
 MCU_SERIES := stm32f3
-MCU_F3_LINE := F303xx
+MCU_F3_LINE := orone_mini_F3
 LD_MEM_DIR := ccm_8k_sram_40k_flash_256k
