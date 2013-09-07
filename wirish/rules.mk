@@ -7,7 +7,11 @@ BUILDDIRS       += $(BUILD_PATH)/$(d)
 # Add board directory and MCU-specific directory to BUILDDIRS. These
 # are in subdirectories, but they're logically part of the Wirish
 # submodule.
+ifeq ($(MCU_SERIES), stm32f3)
+WIRISH_BOARD_PATH := boards/$(MCU_F3_LINE)
+else
 WIRISH_BOARD_PATH := boards/$(BOARD)
+endif
 BUILDDIRS += $(BUILD_PATH)/$(d)/$(WIRISH_BOARD_PATH)
 BUILDDIRS += $(BUILD_PATH)/$(d)/$(MCU_SERIES)
 

@@ -28,9 +28,13 @@ endif
 endif
 
 # The F3 USB peripheral is the same as on the F1 performance line.
+# We therefore reference the F1 sources, but stm32f3/usb_cdcacm.c,
+# which is F3 specific.
 ifeq ($(MCU_SERIES), stm32f3)
-cSRCS_$(d) += $(MCU_SERIES)/usb.c
-cSRCS_$(d) += $(MCU_SERIES)/usb_reg_map.c
+BUILDDIRS += $(BUILD_PATH)/$(d)/stm32f1
+CFLAGS_$(d) += -I$(d)/stm32f1
+cSRCS_$(d) += stm32f1/usb.c
+cSRCS_$(d) += stm32f1/usb_reg_map.c
 cSRCS_$(d) += $(MCU_SERIES)/usb_cdcacm.c
 cSRCS_$(d) += usb_lib/usb_core.c
 cSRCS_$(d) += usb_lib/usb_init.c

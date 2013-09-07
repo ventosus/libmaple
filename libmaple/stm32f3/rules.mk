@@ -9,11 +9,11 @@ CFLAGS_$(d) = -I$(d) $(LIBMAPLE_PRIVATE_INCLUDES) $(LIBMAPLE_INCLUDES) -Wall -We
 ASFLAGS_$(d) = -I$(d) $(LIBMAPLE_PRIVATE_INCLUDES) $(LIBMAPLE_INCLUDES) -Wall -Werror
 
 # Extra BUILDDIRS
-BUILDDIRS += $(BUILD_PATH)/$(d)/$(MCU_F3_LINE)
+BUILDDIRS += $(BUILD_PATH)/$(d)/F30xxx
 
 # Local rules and targets
-sSRCS_$(d) := $(MCU_F3_LINE)/isrs.S
-sSRCS_$(d) += $(MCU_F3_LINE)/vector_table.S
+sSRCS_$(d) := F30xxx/isrs.S
+sSRCS_$(d) += F30xxx/vector_table.S
 
 cSRCS_$(d) := adc.c
 cSRCS_$(d) += dma.c

@@ -1,1 +1,0 @@
-../stm32f1/usb_lib_globals.h
