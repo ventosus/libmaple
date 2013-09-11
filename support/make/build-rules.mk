@@ -1,9 +1,9 @@
 # Useful tools
-CC       := arm-none-eabi-gcc
-CXX      := arm-none-eabi-g++
+CC       := $(CCACHE) arm-none-eabi-gcc
+CXX      := $(CCACHE) arm-none-eabi-g++
 LD       := arm-none-eabi-ld -v
 AR       := arm-none-eabi-ar
-AS       := arm-none-eabi-gcc
+AS       := $(CCACHE) arm-none-eabi-gcc
 OBJCOPY  := arm-none-eabi-objcopy
 DISAS    := arm-none-eabi-objdump
 OBJDUMP  := arm-none-eabi-objdump
