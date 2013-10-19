@@ -93,25 +93,245 @@ _... are the incompatibilities to libmaple proper ..._
 The F3-port is fully compatible with libmaple's high-abstraction (aka Arduino-compatibility) layer called _Wirish_.
 
 ### libmaple
-As some peripherals were extended and others completely redesigned from the F1 to the F3 series, the F3-port of the libmaple peripheral API had to be changed and/or extended accordingly. Find the changes followingly.
+As some peripherals were extended and others completely redesigned from the F1 to the F3 series, the F3-port of the libmaple peripheral API had to be changed and/or extended accordingly. Find the changes followingly. Peripherals with no API changes are not listed below and can be used as ever.
 
 ##### GPIO peripheral
 (under construction)
 
+The F3 GPIO peripheral is the same as on the F2 series, but different from the F1 series. There are 4 general modes, a pin can be in INPUT, OUTPUT, ANALOG or ALTERNATE-FUNCTION mode. There are 3 additional parameters which can affect a pin's configuration: push/pull vs open-drain and low-medium-high speed for output configurations, weak push-up and push-down resistors for both output and input configurations.
+
+To set all this modes, there is a new function:
+
+    void gpio_set_modef(struct gpio_dev *dev, uint8 bit, gpio_pin_mode mode, unsigned flags);
+
+Mode can be set to:
+
+- GPIO\_MODE\_INPUT // digital input mode
+- GPIO\_MODE\_OUTPUT // digital output mode
+- GPIO\_MODE\_AF // alternate function mode
+- GPIO\_MODE\_ANALOG // analog input/output mode
+
+Flags can be set to a combination of individual flags for output type, output speed and pull-up/pull-down (pupd):
+
+- GPIO\_MODEF\_TYPE\_PP // push-pull
+- GPIO\_MODEF\_TYPE\_OD // open-drain
+- GPIO\_MODEF\_SPEED\_LOW // 2MHz
+- GPIO\_MODEF\_SPEED\_MED // 10MHz
+- GPIO\_MODEF\_SPEED\_HIGH // 50MHz
+- GPIO\_MODEF\_PUPD\_NONE // neither pull-up nor pull-down
+- GPIO\_MODEF\_PUPD\_PU // pull-up
+- GPIO\_MODEF\_PUPD\_PD // pull-down
+
+There is also a compatibility function, which sets a pins mode to high speed as its only flag:
+
+    static inline void gpio_set_mode(struct gpio_dev *dev, uint8 bit, gpio_pin_mode mode) {
+			gpio_set_modef(dev, bit, mode, GPIO_MODEF_SPEED_HIGH);
+		}
+
+Apart from the extended modes, the alternate functions system was changed, too. A dedicated alternate function multiplexer was introduced. To enable an alternate function for a given pin (e.g. hardware SPI), the pin's mode firstly has to be set to the ALTERNATE-FUNCTION mode (with additional extended types, like push-pull and speed), and then the right alternate function channel needs to be activated.
+
+    void gpio_set_af(struct gpio_dev *dev, uint8 bit, gpio_af af);
+
+The alternate function can be set to one of 16 channels:
+
+- GPIO\_AF\_0
+- GPIO\_AF\_1
+- GPIO\_AF\_2
+- GPIO\_AF\_3
+- GPIO\_AF\_4
+- GPIO\_AF\_5
+- GPIO\_AF\_6
+- GPIO\_AF\_7
+- GPIO\_AF\_8
+- GPIO\_AF\_9
+- GPIO\_AF\_10
+- GPIO\_AF\_11
+- GPIO\_AF\_12
+- GPIO\_AF\_13
+- GPIO\_AF\_14
+- GPIO\_AF\_15
+
+Upon code migration from libmaple F1 to F3, you need to migrate all GPIO code concerning the setting of the mode and alternate function of a given pin. Some peripherals have a handy function PERIPHERAL\_config\_gpios which does this for you transparently.
+
 ##### ADC peripheral
 (under construction)
+
+The ADC peripheral is new and has been written from scratch. It is the part of the F3-port with the most changes and incompatibilities. If you want to migrate ADC code from the F1 series, you will have to adapt most of it, especially if you used DMA and dual sample mode.
+
+The STM32F302xx have two 2 ADCs (ADC1, ADC2), whereas the STM32F303xx have 4 ADCs (ADC1, ADC2, ADC3, ADC4). The ADCs are grouped into a master (ADC1, ADC3) and its slave (ADC2, ADC4), each. Each ADC can be configured independently by manipulating the individual registers. Or a master and slave can be put in one of the dual modes and configured by manipulating a special master-slave common register.
+
+The F3 series know no SCAN flag, the adc\_scan\_enable and adc\_scan\_disable functions therefore do nothing. There are separate end-of-conversion (EOC) and an end-of-sequence (EOS) interrupt flags instead, that can be masked.
+
+The new ADCs can be run in different bit resolutions, there is a new API function to set these, to be called when the ADC is disabled.
+
+    void adc_set_resolution(const adc_dev *dev, adc_resolution res);
+
+These are the four possible resolutions:
+
+- ADC\_RESOLUTION\_12\_BIT
+- ADC\_RESOLUTION\_10\_BIT
+- ADC\_RESOLUTION\_8\_BIT
+- ADC\_RESOLUTION\_6\_BIT
+	
+Before the ADCs can be enabled, first their voltage regulators have to be enabled, this is checked-for and done automatically for you by libmaple. Nevertheless, there are two new functions for doing this manually.
+
+		void adc_regulator_enable(const adc_dev *dev);
+		void adc_regulator_disable(const adc_dev *dev);
+
+There is a convenience function to set up conversion sequences.
+
+    void adc_set_conv_seq(const adc_dev *dev, const uint8 *channels, uint8 len);
+
+The ADC peripherals can be configured in two main clock modes, asynchronous or synchronous. In asynchronous mode, the ADC peripherals are driven by PCLK, in synchronous mode, they are driven by the ADC bus clock AHBCLK.
+
+In asynchronous mode, the prescaler can be set to:
+
+- ADC\_PRE\_PCLK\_DIV\_1 	
+- ADC\_PRE\_PCLK\_DIV\_2 	
+- ADC\_PRE\_PCLK\_DIV\_4 	
+- ADC\_PRE\_PCLK\_DIV\_6 	
+- ADC\_PRE\_PCLK\_DIV\_8 	
+- ADC\_PRE\_PCLK\_DIV\_10 
+- ADC\_PRE\_PCLK\_DIV\_12 
+- ADC\_PRE\_PCLK\_DIV\_16 
+- ADC\_PRE\_PCLK\_DIV\_32 
+- ADC\_PRE\_PCLK\_DIV\_64 
+- ADC\_PRE\_PCLK\_DIV\_128
+- ADC\_PRE\_PCLK\_DIV\_256
+
+In synchronous mode, the prescaler can be set to:
+
+- ADC\_PRE\_AHBCLK\_DIV\_1
+- ADC\_PRE\_AHBCLK\_DIV\_2
+- ADC\_PRE\_AHBCLK\_DIV\_4
+
+The function to do so (it will put the ADC in asynchronous or synchronous mode automatically, according to the argument):
+
+    void adc_set_prescaler(adc_prescaler pre);
+
+In it's default configuration, the F3-port makes use of the asynchronous mode with prescaler ADC\_PRE\_PCLK\_DIV\_1 (set in libmaple/wirish/stm32f3/boards\_setup.cpp).
+
+The sample rates are expressed relative to the clock source and prescalers used, by default it is set to 181.5 (again in libmaple/wirish/stm32f3/boards\_setup.cpp).
+
+- ADC\_SMPR\_1\_5 
+- ADC\_SMPR\_2\_5 
+- ADC\_SMPR\_4\_5 
+- ADC\_SMPR\_7\_5 
+- ADC\_SMPR\_19\_5
+- ADC\_SMPR\_61\_5
+- ADC\_SMPR\_181\_5
+- ADC\_SMPR\_601\_5
+
+They are set with:
+
+    void adc_set_sample_rate(const adc_dev *dev, adc_smp_rate smp_rate);
+
+The ADC can be triggered by software or external signals:
+
+- ADC\_EXTTRIG\_MODE\_SOFTWARE
+- ADC\_EXTTRIG\_MODE\_HARDWARE\_RISING
+- ADC\_EXTTRIG\_MODE\_HARDWARE\_FALLING
+- ADC\_EXTTRIG\_MODE\_HARDWARE\_BOTH
+
+The mode is set with:
+
+    void adc_set_exttrig(const adc_dev *dev, adc_exttrig_mode mode);
+
+The various hardware triggers (TIMERx or EXTIx), can be selected with:
+
+    void adc_set_extsel(const adc_dev *dev, adc_extsel_event event);
+
+When using DMA in individual mode, you want to enable DMA and run the ADC in circular mode:
+
+    ADC3_BASE->CFGR |= ADC_CFGR_DMAEN; // enable DMA mode
+    ADC3_BASE->CFGR |= ADC_CFGR_DMACFG; // enable DMA circular mode
+
+When ADCs are used in dual mode, DMA must be configured specially in the master-slave common register
+
+- ADC\_MDMA\_MODE\_DISABLE
+- ADC\_MDMA\_MODE\_ENABLE\_12\_10\_BIT
+- ADC\_MDMA\_MODE\_ENABLE\_8\_6\_BIT
+
+e.g. set dual DMA mode for 10 or 12-bit conversions:
+
+    ADC12_BASE->CCR |= ADC_MDMA_MODE_ENABLE_12_10_BIT; // enable DMA in 10/12-bit dual mode
+
+Dual mode itself offers a variety of conversion schemes, choose the right one for you.
+
+- ADC\_MODE\_INDEPENDENT
+- ADC\_MODE\_DUAL\_REGULAR\_INJECTED
+- ADC\_MODE\_DUAL\_REGULAR\_ALTERNATE\_TRIGGER
+- ADC\_MODE\_DUAL\_INJECTED\_ONLY
+- ADC\_MODE\_DUAL\_REGULAR\_ONLY
+- ADC\_MODE\_DUAL\_INTERLEAVED\_ONLY
+- ADC\_MODE\_DUAL\_ALTERNATE\_TRIGGER\_ONLY
+
+e.g. sample only regular channels of master and slave concurrently:
+
+    ADC12_BASE->CCR |= ADC_MODE_DUAL_REGULAR_ONLY;
+
+Of course, there still is a simple function to read out a single channel:
+
+    uint16 adc_read(const adc_dev *dev, uint8 channel);
+
+By default, the ADCs of the F3-port are brought up in single software mode, the corresponding function that does so is:
+
+    void adc_enable_single_swstart(const adc_dev *dev);
+
+The pins, the analog signal is sampled on, needs to be put into ANALOG mode, there is a convenience function to do so:
+
+    void adc_config_gpio(const adc_dev *ignored, gpio_dev *gdev, uint8 bit);
 
 ##### SPI peripheral
 (under construction)
 
+The SPI peripheral on the F3 series has been extended in its functionality. It supports an arbitrary data size from 4 to 16 bits. It does so by introducing a 32-bit FIFO for both the transmitting and receiving endpoints. The handling of the FIFO needs some more control logic, which has been added to the F3-port. However, if you want to port F1-SPI-DMA code, you need to add this logic yourself.
+
+This is the additional API function to set the data size (to be called before spi\_enable):
+
+    void spi_data_size(struct spi_dev *, spi_ds);
+
+Where the data size can be set to the following values:
+
+- SPI\_DATA\_SIZE\_DEFAULT // 8 BIT
+- SPI\_DATA\_SIZE\_4\_BIT
+- SPI\_DATA\_SIZE\_5\_BIT
+- SPI\_DATA\_SIZE\_6\_BIT
+- SPI\_DATA\_SIZE\_7\_BIT
+- SPI\_DATA\_SIZE\_8\_BIT
+- SPI\_DATA\_SIZE\_9\_BIT
+- SPI\_DATA\_SIZE\_10\_BIT
+- SPI\_DATA\_SIZE\_11\_BIT
+- SPI\_DATA\_SIZE\_12\_BIT
+- SPI\_DATA\_SIZE\_13\_BIT
+- SPI\_DATA\_SIZE\_14\_BIT
+- SPI\_DATA\_SIZE\_15\_BIT
+- SPI\_DATA\_SIZE\_16\_BIT
+
 ##### I2C peripheral
 (under construction)
 
-Peripherals with no API changes are not listed above and can be used as ever.
+The F3 series have gotten a new I2C peripheral. It is much cleaner in design compared to the F1 series. An implementation for master mode has been written from scratch. The new implementation did not introduce any API changes, you can use the peripheral as ever, but it should be regarded as _experimental_, that's why it's listed here. It is planned to add a slave mode, too.
+
+##### CCM: core coupled memory
+(under construction)
+
+The F3 series have 8kB of core coupled memory. This is memory that has zero wait-state compared to flash memory that has a wait-state of 2 (at the maximal 72MHz). Currently, the linker scripts are configured to only allow uninitialized data to be put into this memory, it can therefore be used as additional memory only. There is a convenience macro definition to bind a given data to the CCM.
+
+    #define __CCM__ __attribute__((section(".CCM")))
+    uint16_t my_vector [0x400] __CCM__;
+
+The support to bind functions (e.g. interrupt callbacks) to the CCM is planned to be added, those then would actually profit from zero wait-state execution.
+
+##### OpAmp peripheral
+(under construction)
+
+##### Comparator peripheral
+(under construction)
 
 ## Who?
 _... is to blame for all bugs ..._
 
 The author of this port is in no way associated with LeafLabs. The author thinks that libmaple is one of few projects that excel at providing the embedded developer with a clean library usable at different levels of abstraction.
 
-As the author moved to the F3 series of chips and wanted to use libmaple there, too, the creation of this port was only logical. The author's code additions to libmaple are put here in the hope that they will be useful to somebody else and released under the same license as libmaple proper (MIT).
+As the author moved to the F3 series of chips and wanted to use libmaple there, too, the creation of this port was only logical. The author's code additions to libmaple are put here in the hope that they will be useful to somebody else and released under the same terms as libmaple proper (MIT license).
