@@ -244,7 +244,7 @@ void dma_attach_interrupt(dma_dev *dev, dma_channel channel,
 }
 
 void dma_detach_interrupt(dma_dev *dev, dma_channel channel) {
-    /* Don't use nvic_irq_disable()! Think about DMA2 channels 4 and 5. */
+    nvic_irq_disable(dev->handlers[channel - 1].irq_line);
     dma_channel_regs(dev, channel)->CCR &= ~0xF;
     DMA_GET_HANDLER(dev, channel) = NULL;
 }
