@@ -61,10 +61,10 @@ void spi_config_gpios(spi_dev *dev,
                       uint8 sck_bit,
                       uint8 miso_bit,
                       uint8 mosi_bit) {
-			gpio_set_modef(nss_dev, nss_bit, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP);
-			gpio_set_modef(comm_dev, sck_bit, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP);
-			gpio_set_modef(comm_dev, miso_bit, GPIO_MODE_AF, GPIO_MODEF_PUPD_NONE);
-			gpio_set_modef(comm_dev, mosi_bit, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP);
+			gpio_set_modef(nss_dev, nss_bit, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP | GPIO_MODEF_SPEED_HIGH);
+			gpio_set_modef(comm_dev, sck_bit, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP | GPIO_MODEF_SPEED_HIGH);
+			gpio_set_modef(comm_dev, miso_bit, GPIO_MODE_AF, GPIO_MODEF_PUPD_NONE | GPIO_MODEF_SPEED_HIGH);
+			gpio_set_modef(comm_dev, mosi_bit, GPIO_MODE_AF, GPIO_MODEF_TYPE_PP | GPIO_MODEF_SPEED_HIGH);
 
 			if ( (dev == SPI1) || (dev == SPI2) )
 			{

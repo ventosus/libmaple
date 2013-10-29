@@ -109,7 +109,6 @@ extern struct gpio_dev gpiof;
 
 #define GPIO_OSPEEDR_LOW                0x0
 #define GPIO_OSPEEDR_MED                0x1
-#define GPIO_OSPEEDR_FAST               0x2
 #define GPIO_OSPEEDR_HIGH               0x3
 
 /* Pull-up/pull-down register */
@@ -167,8 +166,8 @@ typedef enum gpio_pin_mode {
  *
  * 2. Output speed: specifies the frequency at which a pin changes
  *    state. This only has an effect for output modes. Choices are:
- *    GPIO_MODEF_SPEED_LOW (default), GPIO_MODEF_SPEED_MED,
- *    GPIO_MODEF_SPEED_FAST, and GPIO_MODEF_SPEED_HIGH.
+ *    GPIO_MODEF_SPEED_LOW (default), GPIO_MODEF_SPEED_MED
+ *    and GPIO_MODEF_SPEED_HIGH.
  *
  * 3. Push/pull setting: All GPIO pins have weak pull-up and pull-down
  *    resistors that can be enabled when the pin's mode is
@@ -185,13 +184,9 @@ typedef enum gpio_mode_flags {
                                             specifies output. */
 
     /* Speed in bits 2:1 */
-    GPIO_MODEF_SPEED_LOW = GPIO_OSPEEDR_LOW << 1, /**< Low speed (default):
-                                                     2 MHz. */
-    GPIO_MODEF_SPEED_MED = GPIO_OSPEEDR_MED << 1, /**< Medium speed: 25 MHz. */
-    GPIO_MODEF_SPEED_FAST = GPIO_OSPEEDR_FAST << 1, /**< Fast speed: 50 MHz. */
-    GPIO_MODEF_SPEED_HIGH = GPIO_OSPEEDR_HIGH << 1, /**< High speed: FIXME one of those does not exist on the F3
-                                                       100 MHz on 30 pF,
-                                                       80 MHz on 15 pF. */
+    GPIO_MODEF_SPEED_LOW = GPIO_OSPEEDR_LOW << 1, /**< Low speed (default): 2 MHz. */
+    GPIO_MODEF_SPEED_MED = GPIO_OSPEEDR_MED << 1, /**< Medium speed: 10 MHz. */
+    GPIO_MODEF_SPEED_HIGH = GPIO_OSPEEDR_HIGH << 1, /**< High speed: 50 MHz. */
 
     /* Pull-up/pull-down in bits 4:3 */
     GPIO_MODEF_PUPD_NONE = GPIO_PUPDR_NOPUPD << 3, /**< No pull-up/pull-down

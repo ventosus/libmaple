@@ -108,8 +108,13 @@ extern const uint8 boardADCPins[BOARD_NR_ADC_PINS] __FLASH__ = {
 		PB1
 };
 
-#define USB_DP 23
-#define USB_DM 24
+#define OSC_IN PD0
+#define OSC_OUT PD1
+
+#define BOOT1 PB2
+
+#define USB_DM PA11
+#define USB_DP PA12
 
 extern const uint8 boardUsedPins[BOARD_NR_USED_PINS] __FLASH__ = {
     BOARD_LED_PIN, BOARD_BUTTON_PIN, USB_DP, USB_DM
