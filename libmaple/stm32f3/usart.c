@@ -124,7 +124,16 @@ void usart_set_baud_rate(usart_dev *dev, uint32 clock_speed, uint32 baud) {
 		/* round divider : if fractional part i greater than 0.5 increment divider */
 		if (tmpreg >= baud / 2)
 			divider++;
-		dev->regs->BRR = (uint16)divider;
+
+		if (divider < 16) { // OVER8
+				dev->regs->CR1 |= USART_CR1_OVER8;
+				divider *= 2;
+				dev->regs->BRR = (divider & 0xff0) | ( (divider & 0xf) >> 1);
+		}
+		else { // OVER16
+				dev->regs->CR1 &= ~USART_CR1_OVER8;
+				dev->regs->BRR = (uint16)divider;
+		}
 }
 
 uint32 usart_tx(usart_dev *dev, const uint8 *buf, uint32 len) {
