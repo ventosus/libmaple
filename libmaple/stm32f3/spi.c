@@ -141,3 +141,14 @@ uint32 spi_tx(spi_dev *dev, const void *buf, uint32 len) {
     }
     return txed;
 }
+
+inline void spi_tx_reg(spi_dev *dev, uint16 val) {
+    uint8 byte_frame = (dev->regs->CR2 & SPI_CR2_DS) <= SPI_DATA_SIZE_8_BIT;
+		if (byte_frame) {
+				__io uint8 *dr8 = (__io uint8 *)&dev->regs->DR; /* we need to access as byte */
+				*dr8 = (const uint8)val;
+		} else {
+				__io uint16 *dr16 = (__io uint16 *)&dev->regs->DR; /* we need to access as half-word */
+				*dr16 = (const uint16)val;
+		}
+}

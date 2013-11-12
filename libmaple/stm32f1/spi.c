@@ -109,3 +109,7 @@ uint32 spi_tx(spi_dev *dev, const void *buf, uint32 len) {
     }
     return txed;
 }
+
+inline void spi_tx_reg(spi_dev *dev, uint16 val) {
+    dev->regs->DR = val;
+}

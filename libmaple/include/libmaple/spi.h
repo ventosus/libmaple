@@ -309,8 +309,6 @@ void spi_slave_enable(spi_dev *dev,
                       spi_mode mode,
                       uint32 flags);
 
-uint32 spi_tx(spi_dev *dev, const void *buf, uint32 len);
-
 /**
  * @brief Call a function on each SPI port
  * @param fn Function to call.
@@ -456,9 +454,7 @@ extern uint32 spi_tx(spi_dev *dev, const void *buf, uint32 len);
  * @see spi_master_enable()
  * @see spi_slave_enable()
  */
-static inline void spi_tx_reg(spi_dev *dev, uint16 val) {
-    dev->regs->DR = val; /* FIXME F3 incompatibility */
-}
+extern void spi_tx_reg(spi_dev *dev, uint16 val);
 
 /**
  * @brief Determine whether the device's peripheral busy (SPI_SR_BSY)
