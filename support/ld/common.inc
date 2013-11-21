@@ -143,6 +143,18 @@ SECTIONS
         __data_end__ = .;
       } > REGION_DATA AT> REGION_RODATA
 
+		/*
+		 * CCM RAM section
+		 */
+	  .ccmram :
+			{
+				. = ALIGN(4);
+				__ccm_start__ = .;
+				*(.CCM .CCM.* .gnu.linkonce.c.*)
+				. = ALIGN(4);
+				__ccm_end__ = .;
+			} > REGION_CCM AT> REGION_RODATA
+
     /*
      * Read-only data
      */
@@ -155,6 +167,12 @@ SECTIONS
         . = ALIGN(4);
         _lm_rom_img_cfgp = .;
         LONG(LOADADDR(.data));
+
+				/* CCM image configuration; for C startup */
+				. = ALIGN(4);
+				_lm_ccm_img_cfgp = .;
+				LONG(LOADADDR(.ccmram));
+
         /*
          * Heap: Linker scripts may choose a custom heap by overriding
          * _lm_heap_start and _lm_heap_end. Otherwise, the heap is in
@@ -181,16 +199,6 @@ SECTIONS
         __bss_end__ = .;
         _end = __bss_end__;
       } > REGION_BSS
-
-		/*
-		 * .ccm
-		 */
-	  .ccm (NOLOAD) :
-			{
-				. = ALIGN(4);
-				*(.CCM)
-				. = ALIGN(4);
-			} > REGION_CCM
 
     /*
      * Debugging sections

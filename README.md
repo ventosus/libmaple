@@ -316,12 +316,19 @@ The F3 series have gotten a new I2C peripheral. It is much cleaner in design com
 ##### CCM: core coupled memory
 (under construction)
 
-The F3 series have 8kB of core coupled memory. This is memory that has zero wait-state compared to flash memory that has a wait-state of 2 (at the maximal 72MHz). Currently, the linker scripts are configured to only allow uninitialized data to be put into this memory, it can therefore be used as additional memory only. There is a convenience macro definition to bind a given data to the CCM.
+The F3 series have 8kB of core coupled memory. This is memory that is only accessible from the CPU, not from DMA. This memory can either be used to store data or code, bot not both at the same time. Storing data simply extends your RAM. Storing data can considerably speed up code execution, as core coupled memory exihibits zero wait-state compared to flash memory that has a wait-state of 2 (at the maximal 72MHz). This therefore is the right place to put interrupts and other critical code to get a considerable performance increase. You can tell the linker to put data or code into the core coupled memory with GCC's section attributes or use the already predefined convenience macro \_\_CCM\_\_. To mark code to be put into a given memory section, you have to set the attributes for its prototype definition.
 
     #define __CCM__ __attribute__((section(".CCM")))
-    uint16_t my_vector [0x400] __CCM__;
 
-The support to bind functions (e.g. interrupt callbacks) to the CCM is planned to be added, those then would actually profit from zero wait-state execution.
+    // put this data into core coupled memory
+    uint16_t my_vec [0x400] __CCM__;
+    uint16_t my_var __CCM__ = 34U;
+
+    // put this code into core coupled memory for fastest (zero wait-state) execution
+    void my_irq(void *dat) __CCM__;
+    void my_rq(void *dat) {
+        ...
+    }
 
 ##### OpAmp peripheral
 (under construction)
