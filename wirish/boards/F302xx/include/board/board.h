@@ -129,10 +129,10 @@ enum {
 #endif
 
 /* redefine the following ones to match your hardware design */
-#define BOARD_BUTTON_PIN          PA14
-#define BOARD_LED_PIN             PB10
+#define BOARD_BUTTON_PIN          PC13
+#define BOARD_LED_PIN             PC14
 
-#define BOARD_USB_DISC_DEV        GPIOA
-#define BOARD_USB_DISC_BIT        13
+#define BOARD_USB_DISC_DEV        GPIOC
+#define BOARD_USB_DISC_BIT        15
 
 #endif
