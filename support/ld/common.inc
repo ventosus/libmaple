@@ -144,15 +144,24 @@ SECTIONS
       } > REGION_DATA AT> REGION_RODATA
 
 		/*
-		 * CCM RAM section
+		 * CCM code section
 		 */
-	  .ccmram :
+	  .ccm.text :
 			{
 				. = ALIGN(4);
-				__ccm_start__ = .;
-				*(.CCM .CCM.* .gnu.linkonce.c.*)
+				__ccm_rodata_data_start__ = .;
+				*(.ccm.text)
+			} > REGION_CCM AT> REGION_RODATA
+
+		/*
+		 * CCM initialized data section
+		 */
+	  .ccm.data :
+			{
 				. = ALIGN(4);
-				__ccm_end__ = .;
+				*(.ccm.data)
+				. = ALIGN(4);
+				__ccm_rodata_data_end__ = .;
 			} > REGION_CCM AT> REGION_RODATA
 
     /*
@@ -171,7 +180,7 @@ SECTIONS
 				/* CCM image configuration; for C startup */
 				. = ALIGN(4);
 				_lm_ccm_img_cfgp = .;
-				LONG(LOADADDR(.ccmram));
+				LONG(LOADADDR(.ccm.text));
 
         /*
          * Heap: Linker scripts may choose a custom heap by overriding
@@ -199,6 +208,17 @@ SECTIONS
         __bss_end__ = .;
         _end = __bss_end__;
       } > REGION_BSS
+
+		/*
+		 * CCM uninitialized data section
+		 */
+	  .ccm.bss :
+			{
+				. = ALIGN(4);
+        __ccm_bss_start__ = .;
+				*(.ccm.bss)
+        __ccm_bss_end__ = .;
+			} > REGION_CCM
 
     /*
      * Debugging sections

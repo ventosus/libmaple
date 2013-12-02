@@ -38,7 +38,9 @@
 extern "C" {
 #endif
 
-#define __CCM__ __attribute__((section(".CCM")))
+#define __CCM_TEXT__ __attribute__((section(".ccm.text")))
+#define __CCM_DATA__ __attribute__((section(".ccm.data")))
+#define __CCM_BSS__ __attribute__((section(".ccm.bss")))
 
 #define STM32_MCU_SERIES                STM32_SERIES_F3
 
