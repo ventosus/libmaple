@@ -96,7 +96,6 @@ The F3-port is fully compatible with libmaple's high-abstraction (aka Arduino-co
 As some peripherals were extended and others completely redesigned from the F1 to the F3 series, the F3-port of the libmaple peripheral API had to be changed and/or extended accordingly. Find the changes followingly. Peripherals with no API changes are not listed below and can be used as ever.
 
 ##### GPIO peripheral
-(under construction)
 
 The F3 GPIO peripheral is the same as on the F2 series, but different from the F1 series. There are 4 general modes, a pin can be in INPUT, OUTPUT, ANALOG or ALTERNATE-FUNCTION mode. There are 3 additional parameters which can affect a pin's configuration: push/pull vs open-drain and low-medium-high speed for output configurations, weak push-up and push-down resistors for both output and input configurations.
 
@@ -154,7 +153,6 @@ The alternate function can be set to one of 16 channels:
 Upon code migration from libmaple F1 to F3, you need to migrate all GPIO code concerning the setting of the mode and alternate function of a given pin. Some peripherals have a handy function PERIPHERAL\_config\_gpios which does this for you transparently.
 
 ##### ADC peripheral
-(under construction)
 
 The ADC peripheral is new and has been written from scratch. It is the part of the F3-port with the most changes and incompatibilities. If you want to migrate ADC code from the F1 series, you will have to adapt most of it, especially if you used DMA and dual sample mode.
 
@@ -283,7 +281,6 @@ The pins, the analog signal is sampled on, needs to be put into ANALOG mode, the
     void adc_config_gpio(const adc_dev *ignored, gpio_dev *gdev, uint8 bit);
 
 ##### SPI peripheral
-(under construction)
 
 The SPI peripheral on the F3 series has been extended in its functionality. It supports an arbitrary data size from 4 to 16 bits. It does so by introducing a 32-bit FIFO for both the transmitting and receiving endpoints. The handling of the FIFO needs some more control logic, which has been added to the F3-port. However, if you want to port F1-SPI-DMA code, you need to add this logic yourself.
 
@@ -309,24 +306,26 @@ Where the data size can be set to the following values:
 - SPI\_DATA\_SIZE\_16\_BIT
 
 ##### I2C peripheral
-(under construction)
 
 The F3 series have gotten a new I2C peripheral. It is much cleaner in design compared to the F1 series. An implementation for master mode has been written from scratch. The new implementation did not introduce any API changes, you can use the peripheral as ever, but it should be regarded as _experimental_, that's why it's listed here. It is planned to add a slave mode, too.
 
 ##### CCM: core coupled memory
-(under construction)
 
-The F3 series have 8kB of core coupled memory. This is memory that is only accessible from the CPU, not from DMA. This memory can either be used to store data or code, bot not both at the same time. Storing data simply extends your RAM. Storing data can considerably speed up code execution, as core coupled memory exihibits zero wait-state compared to flash memory that has a wait-state of 2 (at the maximal 72MHz). This therefore is the right place to put interrupts and other critical code to get a considerable performance increase. You can tell the linker to put data or code into the core coupled memory with GCC's section attributes or use the already predefined convenience macro \_\_CCM\_\_. To mark code to be put into a given memory section, you have to set the attributes for its prototype definition.
+The F3 series have 8kB of core coupled memory. This is memory that is only accessible from the CPU, not from DMA. This memory can either be used to store data or code, bot not both at the same time. Storing data simply extends your RAM. Storing data can considerably speed up code execution, as core coupled memory exihibits zero wait-state compared to flash memory that has a wait-state of 2 (at the maximal 72MHz). This therefore is the right place to put interrupts and other critical code to get a considerable performance increase. You can tell the linker to put (un)initialized data or code into the core coupled memory with GCC's section attributes or use the already predefined convenience macros. The sections are called _.ccm.text_, _.ccm.data_ and _.ccm.bss_ for code, initialized and uninitialized data, respectively.
 
-    #define __CCM__ __attribute__((section(".CCM")))
+    from libmaple/libmaple/stm32f3/include/series/stm32.h
+    -----------------------------------------------------
+    #define __CCM_TEXT__ __attribute__((section(".ccm.text")))
+    #define __CCM_DATA__ __attribute__((section(".ccm.data")))
+    #define __CCM_BSS__ __attribute__((section(".ccm.bss")))
 
-    // put this data into core coupled memory
-    uint16_t my_vec [0x400] __CCM__;
-    uint16_t my_var __CCM__ = 34U;
+    // put this (un)initialized data into core coupled memory
+    uint16_t my_vec [0x400] __CCM_BSS__;
+    uint16_t my_var __CCM_DATA__ = 34U;
 
     // put this code into core coupled memory for fastest (zero wait-state) execution
-    void my_irq(void *dat) __CCM__;
-    void my_rq(void *dat) {
+    void __CCM_TEXT__
+		my_irq(void *dat) {
         ...
     }
 
