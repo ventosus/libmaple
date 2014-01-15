@@ -241,7 +241,7 @@ void adc_disable(const adc_dev *dev) {
 }
 
 /* IRQ handler for adc_attach_interrupt() */
-static __always_inline void adc_irq(const adc_dev *dev) {
+static inline __always_inline void adc_irq(const adc_dev *dev) {
     struct adc_private_data *priv = dev->priv;
     uint32 irq_flags = dev->regs->SR & priv->handler_flags;
 

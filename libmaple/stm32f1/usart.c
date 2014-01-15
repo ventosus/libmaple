@@ -156,7 +156,7 @@ void usart_foreach(void (*fn)(usart_dev*)) {
  * Interrupt handlers.
  */
 
-static __always_inline void usart_irq(ring_buffer *rb, usart_reg_map *regs) {
+static inline __always_inline void usart_irq(ring_buffer *rb, usart_reg_map *regs) {
 #ifdef USART_SAFE_INSERT
     /* If the buffer is full and the user defines USART_SAFE_INSERT,
      * ignore new bytes. */

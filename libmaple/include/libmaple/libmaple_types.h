@@ -52,11 +52,21 @@ typedef void (*voidArgumentFuncPtr)(void *);
 
 #define __io volatile
 #define __attr_flash __attribute__((section (".USER_FLASH")))
-#define __packed __attribute__((__packed__))
+
+#ifndef __packed // present in newer GCC (>= 4.8) @ /include/sys/cdefs.h
+#	define __packed __attribute__((__packed__))
+#endif
+
 #define __deprecated __attribute__((__deprecated__))
 #define __weak __attribute__((weak))
-#define __always_inline inline __attribute__((always_inline))
-#define __unused __attribute__((unused))
+
+#ifndef __always_inline // present in newer GCC (>= 4.8) @ /include/sys/cdefs.h
+#	define __always_inline __attribute__((always_inline))
+#endif
+
+#ifndef __unused // present in newer GCC (>= 4.8) @ /include/sys/cdefs.h
+#	define __unused __attribute__((unused))
+#endif
 
 #ifndef NULL
 #define NULL 0
