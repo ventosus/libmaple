@@ -66,7 +66,8 @@ typedef enum nvic_irq_num {
     NVIC_RCC            = 5,    /**< Reset and clock control */
     NVIC_EXTI0          = 6,    /**< EXTI line 0 */
     NVIC_EXTI1          = 7,    /**< EXTI line 1 */
-    NVIC_EXTI2          = 8,    /**< EXTI line 2 */ //FIXME capacitive touch
+    NVIC_EXTI2          = 8,    /**< EXTI line 2 */
+		NVIC_EXTI2_TSC			= NVIC_EXTI2, // XXX F3 hack which has capacitive touch sensing
     NVIC_EXTI3          = 9,    /**< EXTI line 3 */
     NVIC_EXTI4          = 10,   /**< EXTI line 4 */
     NVIC_DMA_CH1        = 11,   /**< DMA1 channel 1 */
@@ -82,14 +83,14 @@ typedef enum nvic_irq_num {
     NVIC_CAN_RX1        = 21,   /**< CAN RX1 */
     NVIC_CAN_SCE        = 22,   /**< CAN SCE */
     NVIC_EXTI_9_5       = 23,   /**< EXTI line [9:5] */
-		//NVIC_TIMER1_BRK_TIMER15 = 24, // FIXME hack
-    NVIC_TIMER1_BRK_TIMER9 = 24, /**< Timer 1 break, Timer 9. */ // FIXME rm
-		//NVIC_TIMER1_UP_TIMER16 = 25, // FIXME hack
-    NVIC_TIMER1_UP_TIMER10  = 25, /**< Timer 1 update, Timer 10. */ //FIXME rm
-		//NVIC_TIMER1_TRG_COM_TIMER17 = 26, // FIXME hack
+    NVIC_TIMER1_BRK_TIMER9	= 24, /**< Timer 1 break, Timer 9. */
+    NVIC_TIMER1_BRK_TIMER15 = NVIC_TIMER1_BRK_TIMER9, // XXX F3 hack which has TIMER15 instead of TIMER9
+    NVIC_TIMER1_UP_TIMER10  = 25, /**< Timer 1 update, Timer 10. */
+		NVIC_TIMER1_UP_TIMER16	= NVIC_TIMER1_UP_TIMER10, // XXX F3 hack which has TIMER16 instead of TIMER10
     NVIC_TIMER1_TRG_COM_TIMER11 = 26, /**<
                                        * Timer 1 trigger and commutation,
-                                       * Timer 11. */ // FIXME rm
+                                       * Timer 11. */
+		NVIC_TIMER1_TRG_COM_TIMER17	= NVIC_TIMER1_TRG_COM_TIMER11, // XXX F3 hack which has TIMER17 instead of TIMER11
     NVIC_TIMER1_CC        = 27,   /**< Timer 1 capture/compare */
     NVIC_TIMER2           = 28,   /**< Timer 2 */
     NVIC_TIMER3           = 29,   /**< Timer 3 */
@@ -107,19 +108,22 @@ typedef enum nvic_irq_num {
     NVIC_RTC_ALARM        = 41,   /**< RTC alarm through EXTI line */
     NVIC_USB_WKUP         = 42,   /**< USB wakeup from suspend through
                                      EXTI line */
-    NVIC_TIMER8_BRK_TIMER12       = 43, /**< Timer 8 break, timer 12  */ //TODO rm TIMER12
-    NVIC_TIMER8_UP_TIMER13        = 44, /**< Timer 8 update, timer 13 */ // TODO rm TIMER13
+    NVIC_TIMER8_BRK_TIMER12       = 43, /**< Timer 8 break, timer 12  */
+		NVIC_TIMER8_BRK				= NVIC_TIMER8_BRK_TIMER12, // XXX F3 hack which has no TIMER12
+    NVIC_TIMER8_UP_TIMER13        = 44, /**< Timer 8 update, timer 13 */
+		NVIC_TIMER8_UP				= NVIC_TIMER8_UP_TIMER13, // XXX F3 hack which has no TIMER13
     NVIC_TIMER8_TRG_COM_TIMER14  = 45, /**<
                                        * Timer 8 trigger and commutation,
-                                       * Timer 14. */ //TODO rm TIMER14
+                                       * Timer 14. */
+		NVIC_TIMER8_TRG_COM	= NVIC_TIMER8_TRG_COM_TIMER14, // XXX F3 hack which has no TIMER14
     NVIC_TIMER8_CC      = 46,   /**< Timer 8 capture/compare */
     NVIC_ADC3           = 47,   /**< ADC3 */
 
     NVIC_SPI3           = 51,   /**< SPI3 */
     NVIC_UART4          = 52,   /**< UART4 */
     NVIC_UART5          = 53,   /**< UART5 */
-    //NVIC_TIMER6_DAC     = 54,   // TODO hack
-    NVIC_TIMER6	        = 54,   /**< Timer 6 */ //TODO add DAC
+    NVIC_TIMER6	        = 54,   /**< Timer 6 */
+    NVIC_TIMER6_DAC     = NVIC_TIMER6,   // XXX F3 hack which has DAC peripheral
     NVIC_TIMER7         = 55,   /**< Timer 7 */
     NVIC_DMA2_CH1       = 56,   /**< DMA2 channel 1 */
     NVIC_DMA2_CH2       = 57,   /**< DMA2 channel 2 */
