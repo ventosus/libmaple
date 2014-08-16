@@ -64,8 +64,10 @@ typedef struct usart_reg_map {
  * Register map base pointers
  */
 
+#if !((SMT32_F3_LINE == STM32_F3_LINE_301) && STM32_LOW_DENSITY)
 /** USART1 register map base pointer */
 #define USART1_BASE                     ((struct usart_reg_map*)0x40013800)
+#endif
 /** USART2 register map base pointer */
 #define USART2_BASE                     ((struct usart_reg_map*)0x40004400)
 /** USART3 register map base pointer */
@@ -83,7 +85,9 @@ typedef struct usart_reg_map {
  */
 
 struct usart_dev;
+#if !((SMT32_F3_LINE == STM32_F3_LINE_301) && STM32_LOW_DENSITY)
 extern struct usart_dev *USART1;
+#endif
 extern struct usart_dev *USART2;
 extern struct usart_dev *USART3;
 #ifdef STM32_HIGH_DENSITY

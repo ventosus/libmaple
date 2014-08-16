@@ -104,10 +104,12 @@ typedef struct adc_dev {
  */
 
 extern const struct adc_dev *ADC1;	/* master */
+#if STM32_F3_LINE != STM32_F3_LINE_301
 extern const struct adc_dev *ADC2;	/* slave */
-#if STM32_F3_LINE == STM32_F3_LINE_303
+# if STM32_F3_LINE == STM32_F3_LINE_303
 extern const struct adc_dev *ADC3;	/* master */
 extern const struct adc_dev *ADC4;	/* slave */
+# endif
 #endif
 
 /*

@@ -88,47 +88,65 @@ gpio_af timer_get_af(timer_dev *dev) {
  * file.
  */
 
+#if STM32_HAVE_TIMER(1)
+#	if STM32_HAVE_TIMER(15)
 void __irq_tim1_brk_tim15(void) {
     dispatch_adv_brk(TIMER1);
     dispatch_tim_9_12(TIMER15);
 }
+#	endif
 
+#	if STM32_HAVE_TIMER(16)
 void __irq_tim1_up_tim16(void) {
     dispatch_adv_up(TIMER1);
     dispatch_tim_10_11_13_14(TIMER16);
 }
+#	endif
 
+#	if STM32_HAVE_TIMER(17)
 void __irq_tim1_trg_com_tim17(void) {
     dispatch_adv_trg_com(TIMER1);
     dispatch_tim_10_11_13_14(TIMER17);
 }
+#	endif
 
 void __irq_tim1_cc(void) {
     dispatch_adv_cc(TIMER1);
 }
+#endif
 
+#if STM32_HAVE_TIMER(2)
 void __irq_tim2(void) {
     dispatch_general(TIMER2);
 }
+#endif
 
+#if STM32_HAVE_TIMER(3)
 void __irq_tim3(void) {
     dispatch_general(TIMER3);
 }
+#endif
 
+#if STM32_HAVE_TIMER(4)
 void __irq_tim4(void) {
     dispatch_general(TIMER4);
 }
+#endif
 
+#if STM32_HAVE_TIMER(6)
 void __irq_tim6_dacunder(void) {
     dispatch_basic(TIMER6);
 		/* FIXME handle DAC12 underrun */
 }
+#endif
 
-#if STM32_F3_LINE == STM32_F3_LINE_303
+#if STM32_HAVE_TIMER(7)
 void __irq_tim7(void) {
     dispatch_basic(TIMER7);
 }
+#endif
 
+#if STM32_HAVE_TIMER(8)
 void __irq_tim8_brk(void) {
     dispatch_adv_brk(TIMER8);
 }

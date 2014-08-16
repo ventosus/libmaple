@@ -27,7 +27,7 @@
 /**
  * @file   wirish/boards/48F3/board.c
  * @author F3-port: Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief  F302xx board file (F302CB, F302CC, F302RB, F302RC, F302VB, F302VC).
+ * @brief  F302xx board file (F302K6, F302K8, F302C6, F302C8, F302CB, F302CC, F302R6, F302R8, F302RB, F302RC, F302VB, F302VC).
  */
 
 #include <board/board.h>
@@ -47,14 +47,15 @@ void boardInit(void) {
 #endif
 }
 
+#if !STM32_HAVE_TIMER(3)
+#	define TIMER3 NULL
+#endif
+
+#if !STM32_HAVE_TIMER(4)
+#	define TIMER4 NULL
+#endif
+
 extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
-    [PC13]= {GPIOC,   NULL, NULL, 13, 0, ADCx},	/* PC13 */  
-    [PC14]= {GPIOC,   NULL, NULL, 14, 0, ADCx},	/* PC14 */ 			/* OSC32_IN */
-    [PC15]= {GPIOC,   NULL, NULL, 15, 0, ADCx},	/* PC15 */ 			/* OSC32_OUT */
-
-    [PF0] = {GPIOF,   NULL, NULL,  0, 0, ADCx},	/* PF0 */ 			/* OSC_IN */
-    [PF1] = {GPIOF,   NULL, NULL,  1, 0, ADCx},	/* PF1 */ 			/* OSC_OUT */
-
     [PA0] = {GPIOA, TIMER2, ADC1,  0, 1,    1},	/* PA0 */ 
     [PA1] = {GPIOA, TIMER2, ADC1,  1, 2,    2},	/* PA1 */ 
     [PA2] = {GPIOA, TIMER2, ADC1,  2, 3,    3},	/* PA2 */ 			/* also TIMER15 CH1 */
@@ -65,15 +66,6 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
     [PA7] = {GPIOA, TIMER3, ADC2,  7, 2,    4},	/* PA7 */ 			/* also TIMER17 CH1 */
 
     [PB0] = {GPIOB, TIMER3, NULL,  0, 3, ADCx},	/* PB0 */ 
-    [PB1] = {GPIOB, TIMER3, NULL,  1, 4, ADCx},	/* PB1 */ 
-    [PB2] = {GPIOB,   NULL, ADC2,  2, 0,   12},	/* PB2 */ 
-
-    [PB10]= {GPIOB, TIMER2, NULL, 10, 3, ADCx},	/* PB10 */ 
-    [PB11]= {GPIOB, TIMER2, NULL, 11, 4, ADCx},	/* PB11 */ 
-    [PB12]= {GPIOB,   NULL, NULL, 12, 0, ADCx},	/* PB12 */ 
-    [PB13]= {GPIOB,   NULL, NULL, 13, 0, ADCx},	/* PB13 */ 
-    [PB14]= {GPIOB, TIMER15,NULL, 14, 1, ADCx},	/* PB14 */ 
-    [PB15]= {GPIOB, TIMER15,NULL, 15, 2, ADCx},	/* PB15 */ 
 
     [PA8] = {GPIOA, TIMER1, NULL,  8, 1, ADCx},	/* PA8 */ 
     [PA9] = {GPIOA, TIMER1, NULL,  9, 2, ADCx},	/* PA9 */ 			/* also TIMER2_CH3 */
@@ -89,10 +81,29 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
     [PB5] = {GPIOB, TIMER3, NULL,  5, 2, ADCx},	/* PB5 */ 			/* also TIMER17 CH1 */
     [PB6] = {GPIOB, TIMER4, NULL,  6, 1, ADCx},	/* PB6 */
     [PB7] = {GPIOB, TIMER4, NULL,  7, 2, ADCx},	/* PB7 */ 			/* also TIMER3 CH4 */
+
+#if defined(STM32_MEDIUM_DENSITY) || defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+    [PC13]= {GPIOC,   NULL, NULL, 13, 0, ADCx},	/* PC13 */  
+    [PC14]= {GPIOC,   NULL, NULL, 14, 0, ADCx},	/* PC14 */ 			/* OSC32_IN */
+    [PC15]= {GPIOC,   NULL, NULL, 15, 0, ADCx},	/* PC15 */ 			/* OSC32_OUT */
+
+    [PF0] = {GPIOF,   NULL, NULL,  0, 0, ADCx},	/* PF0 */ 			/* OSC_IN */
+    [PF1] = {GPIOF,   NULL, NULL,  1, 0, ADCx},	/* PF1 */ 			/* OSC_OUT */
+
+    [PB1] = {GPIOB, TIMER3, NULL,  1, 4, ADCx},	/* PB1 */ 
+    [PB2] = {GPIOB,   NULL, ADC2,  2, 0,   12},	/* PB2 */ 
+
+    [PB10]= {GPIOB, TIMER2, NULL, 10, 3, ADCx},	/* PB10 */ 
+    [PB11]= {GPIOB, TIMER2, NULL, 11, 4, ADCx},	/* PB11 */ 
+    [PB12]= {GPIOB,   NULL, NULL, 12, 0, ADCx},	/* PB12 */ 
+    [PB13]= {GPIOB,   NULL, NULL, 13, 0, ADCx},	/* PB13 */ 
+    [PB14]= {GPIOB, TIMER15,NULL, 14, 1, ADCx},	/* PB14 */ 
+    [PB15]= {GPIOB, TIMER15,NULL, 15, 2, ADCx},	/* PB15 */ 
+
     [PB8] = {GPIOB, TIMER4, NULL,  8, 3, ADCx},	/* PB8 */ 			/* also TIMER16 CH1 */
     [PB9] = {GPIOB, TIMER4, NULL,  9, 4, ADCx},	/* PB9 */ 			/* also TIMER17 CH1 */
 
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+# if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
     [PC0] = {GPIOC,   NULL, ADC1,  0, 0,    6},	/* PC0 */  
     [PC1] = {GPIOC,   NULL, ADC1,  1, 0,    7},	/* PC1 */  
     [PC2] = {GPIOC,   NULL, ADC1,  2, 0,    8},	/* PC2 */  
@@ -112,7 +123,7 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
 
     [PD2] = {GPIOD,   NULL, NULL,  2, 0, ADCx},	/* PD2 */  
 
-#	if defined(STM32_XL_DENSITY)
+#	 if defined(STM32_XL_DENSITY)
     [PE2] = {GPIOE, TIMER3, NULL,  2, 1, ADCx},	/* PE2 */  
     [PE3] = {GPIOE, TIMER3, NULL,  3, 2, ADCx},	/* PE3 */  
     [PE4] = {GPIOE, TIMER3, NULL,  4, 3, ADCx},	/* PE4 */  
@@ -156,26 +167,41 @@ extern const stm32_pin_info PIN_MAP[BOARD_NR_GPIO_PINS] = {
 
     [PE0] = {GPIOE,TIMER16, NULL,  0, 1, ADCx},	/* PE0 */  
     [PE1] = {GPIOE,TIMER17, NULL,  1, 1, ADCx},	/* PE1 */  
+#	 endif
 #	endif
 #endif
 };
 
+#if !STM32_HAVE_TIMER(3)
+#	undef TIMER3
+#endif
+
+#if !STM32_HAVE_TIMER(4)
+#	undef TIMER4
+#endif
+
 extern const uint8 boardPWMPins[BOARD_NR_PWM_PINS] __FLASH__ = {
-		PA0, PA1, PA2, PA3, PA4, PA6, PA7, PB0, PB1, PB10, PB11, PB14, PB15, PA8, PA9, PA10, PA11, PA12, PA13, PB3, PB4, PB5, PB6, PB7, PB8, PB9,
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+		PA0, PA1, PA2, PA3, PA4, PA6, PA7, PB0, PA8, PA9, PA10, PA11, PA12, PA13, PB3, PB4, PB5, PB6, PB7,
+#if defined(STM32_MEDIUM_DENSITY) || defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+		PB1, PB8, PB9, PB10, PB11, PB14, PB15,
+# if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
 		PC6, PC7, PC8, PC9,
-#	if defined(STM32_XL_DENSITY)
+# 	if defined(STM32_XL_DENSITY)
 		PE2, PE3, PE4, PE5, PF9, PF10, PE9, PE11, PE13, PE14, PD12, PD13, PD14, PD15, PF6, PD4, PD6, PD7, PE0, PE1,
+#	 endif
 #	endif
 #endif
 };
 
 extern const uint8 boardADCPins[BOARD_NR_ADC_PINS] __FLASH__ = {
-		PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7, PB2, 
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+		PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7,
+#if defined(STM32_MEDIUM_DENSITY) || defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+		PB2, 
+# if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
 		PC0, PC1, PC2, PC3, PF4, PC4, PC5, 
-#	if defined(STM32_XL_DENSITY)
+#	 if defined(STM32_XL_DENSITY)
 		PF2,
+#	 endif
 #	endif
 #endif
 };

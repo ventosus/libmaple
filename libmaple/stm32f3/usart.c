@@ -39,6 +39,7 @@
  * Devices
  */
 
+#if !((SMT32_F3_LINE == STM32_F3_LINE_301) && STM32_LOW_DENSITY)
 static ring_buffer usart1_rb;
 static usart_dev usart1 = {
     .regs     = USART1_BASE,
@@ -49,6 +50,7 @@ static usart_dev usart1 = {
 };
 /** USART1 device */
 usart_dev *USART1 = &usart1;
+#endif
 
 static ring_buffer usart2_rb;
 static usart_dev usart2 = {

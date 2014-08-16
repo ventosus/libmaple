@@ -51,6 +51,7 @@ static adc_dev adc1 = {
 /** ADC1 device. */
 const adc_dev *ADC1 = &adc1;
 
+#if STM32_F3_LINE != STM32_F3_LINE_301
 static adc_private_data adc2_priv;
 static adc_dev adc2 = {
     .regs   = ADC2_BASE,
@@ -60,7 +61,7 @@ static adc_dev adc2 = {
 /** ADC2 device. */
 const adc_dev *ADC2 = &adc2;
 
-#if STM32_F3_LINE == STM32_F3_LINE_303
+#	if STM32_F3_LINE == STM32_F3_LINE_303
 static adc_private_data adc3_priv;
 static adc_dev adc3 = {
     .regs   = ADC3_BASE,
@@ -78,6 +79,7 @@ static adc_dev adc4 = {
 };
 /** ADC4 device. */
 const adc_dev *ADC4 = &adc4;
+#	endif
 #endif
 
 /*
@@ -289,10 +291,12 @@ void adc_set_prescaler(adc_prescaler pre) {
 
 void adc_foreach(void (*fn)(const adc_dev*)) {
     fn(ADC1);
+#if STM32_F3_LINE != STM32_F3_LINE_301
     fn(ADC2);
-#if STM32_F3_LINE == STM32_F3_LINE_303
+#	if STM32_F3_LINE == STM32_F3_LINE_303
     fn(ADC3);
     fn(ADC4);
+#	endif
 #endif
 }
 
@@ -365,7 +369,11 @@ void adc_regulator_disable(const adc_dev *dev) {
  */
 
 void _adc_enable_dev_irq(const adc_dev *dev) {
+#if STM32_F3_LINE == STM32_F3_LINE_301
+		if (dev == ADC1)
+#else
 		if ( (dev == ADC1) || (dev == ADC2) )
+#endif
 			nvic_irq_enable(NVIC_ADC1_2);
 #if STM32_F3_LINE == STM32_F3_LINE_303
 		else {

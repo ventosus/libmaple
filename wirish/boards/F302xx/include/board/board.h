@@ -27,7 +27,7 @@
 /**
  * @file   wirish/boards/48F3/include/board/board.h
  * @author F3-port: Hanspeter Portner <dev@open-music-kontrollers.ch>
- * @brief  F302xx board header (F302CB, F302CC, F302RB, F302RC, F302VB, F302VC).
+ * @brief  F302xx board header (F302K6, F302K8, F302C6, F302C8, F302CB, F302CC, F302R6, F302R8, F302RB, F302RC, F302VB, F302VC).
  *
  * See wirish/boards/maple/include/board/board.h for more information
  * on these definitions.
@@ -42,19 +42,22 @@
 #define SYSTICK_RELOAD_VAL     71999 /* takes a cycle to reload */
 
 enum {
+		PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7,
+		PB0, 
+		PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15,
+		PB3, PB4, PB5, PB6, PB7, 
+#if defined(STM32_MEDIUM_DENSITY) || defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
 		PC13, PC14, PC15,
 		PF0, PF1,
-		PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7,
-		PB0, PB1, PB2,
+		PB1, PB2,
 		PB10, PB11, PB12, PB13, PB14, PB15,
-		PA8, PA9, PA10, PA11, PA12, PA13, PA14, PA15,
-		PB3, PB4, PB5, PB6, PB7, PB8, PB9,
-#if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
+		PB8, PB9,
+# if defined(STM32_HIGH_DENSITY) || defined(STM32_XL_DENSITY)
 		PC0, PC1, PC2, PC3,
 		PF4,
 		PC4, PC5, PC6, PC7, PC8, PC9, PC10, PC11, PC12,
 		PD2,
-#	if defined(STM32_XL_DENSITY)
+# 	if defined(STM32_XL_DENSITY)
 		PE2, PE3, PE4, PE5, PE6,
 		PF9, PF10,
 		PF2,
@@ -64,6 +67,7 @@ enum {
 		PD0, PD1,
 		PD3, PD4, PD5, PD6, PD7,
 		PE0, PE1,
+#	 endif
 #	endif
 #endif
 };
@@ -108,7 +112,13 @@ enum {
 #define BOARD_JTDO_PIN            PB3
 #define BOARD_NJTRST_PIN          PB4
 
-#if defined(STM32_MEDIUM_DENSITY)
+#if defined(STM32_LOW_DENSITY)
+# define BOARD_NR_USARTS           3
+#	define BOARD_NR_GPIO_PINS        22
+#	define BOARD_NR_PWM_PINS         19
+#	define BOARD_NR_ADC_PINS         8
+#	define BOARD_NR_USED_PINS         4
+#elif defined(STM32_MEDIUM_DENSITY)
 # define BOARD_NR_USARTS           3
 #	define BOARD_NR_GPIO_PINS        37
 #	define BOARD_NR_PWM_PINS         26

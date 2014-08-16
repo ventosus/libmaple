@@ -148,7 +148,9 @@ typedef enum spi_fifo_reception_level {
 
 struct spi_dev;
 
+#if STM32_F3_LINE != STM32_F3_LINE_301
 extern struct spi_dev *SPI1;
+#endif
 extern struct spi_dev *SPI2;
 extern struct spi_dev *SPI3;
 

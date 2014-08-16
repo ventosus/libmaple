@@ -36,6 +36,7 @@
 #define _LIBMAPLE_STM32F3_TIMER_H_
 
 #include <libmaple/libmaple_types.h>
+#include <libmaple/stm32.h>
 #include <libmaple/gpio.h>
 
 /*
@@ -101,18 +102,45 @@ struct timer_bas_reg_map;
 
 struct timer_dev;
 
+#if STM32_HAVE_TIMER(1)
 extern struct timer_dev *TIMER1;
+#endif
+
+#if STM32_HAVE_TIMER(2)
 extern struct timer_dev *TIMER2; /* FIXME 32bit-capable counter */
+#endif
+
+#if STM32_HAVE_TIMER(3)
 extern struct timer_dev *TIMER3;
+#endif
+
+#if STM32_HAVE_TIMER(4)
 extern struct timer_dev *TIMER4;
+#endif
+
+#if STM32_HAVE_TIMER(6)
 extern struct timer_dev *TIMER6;
-#if STM32_F3_LINE == STM32_F3_LINE_303
+#endif
+
+#if STM32_HAVE_TIMER(7)
 extern struct timer_dev *TIMER7;
+#endif
+
+#if STM32_HAVE_TIMER(8)
 extern struct timer_dev *TIMER8;
 #endif
+
+#if STM32_HAVE_TIMER(15)
 extern struct timer_dev *TIMER15;
+#endif
+
+#if STM32_HAVE_TIMER(16)
 extern struct timer_dev *TIMER16;
+#endif
+
+#if STM32_HAVE_TIMER(17)
 extern struct timer_dev *TIMER17;
+#endif
 
 /*
  * Routines

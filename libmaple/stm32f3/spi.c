@@ -41,11 +41,15 @@
  * Devices
  */
 
+#if STM32_F3_LINE != STM32_F3_LINE_301
 static spi_dev spi1 = SPI_DEV(1);
+#endif
 static spi_dev spi2 = SPI_DEV(2);
 static spi_dev spi3 = SPI_DEV(3);
 
+#if STM32_F3_LINE != STM32_F3_LINE_301
 spi_dev *SPI1 = &spi1;
+#endif
 spi_dev *SPI2 = &spi2;
 spi_dev *SPI3 = &spi3;
 

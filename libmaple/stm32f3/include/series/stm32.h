@@ -50,10 +50,12 @@ extern "C" {
  *
  * You can use these F3 line defines if porting libmaple to support
  * MCUs on other lines. */
+/** STM32F3 301 line (STM32F301 MCUs). */
+#define STM32_F3_LINE_301					0
 /** STM32F3 302 line (STM32F302 MCUs). */
-#define STM32_F3_LINE_302					0
+#define STM32_F3_LINE_302					1
 /** STM32F3 303 line (STM32F303 MCUs). */
-#define STM32_F3_LINE_303					1
+#define STM32_F3_LINE_303					2
 
 /*
  * MCU-specific values.
@@ -64,126 +66,213 @@ extern "C" {
  * STM32F303 microcontrollers set below won't take effect.
  */
 
-#if defined(MCU_STM32F302CB)
-#   define STM32_F3_LINE                STM32_F3_LINE_302
-#   define STM32_NR_GPIO_PORTS          20
-#   define STM32_SRAM_END               ((void*)0x20008000)
-#   define STM32_MEDIUM_DENSITY // 48pin package
+#define SRAM_END_12K										((void*)0x20003000)
+#define SRAM_END_16K										((void*)0x20004000)
+#define SRAM_END_32K										((void*)0x20008000)
+#define SRAM_END_40K										((void*)0x2000a000)
 
-#elif defined(MCU_STM32F302RB)
-#   define STM32_F3_LINE                STM32_F3_LINE_302
-#   define STM32_NR_GPIO_PORTS          27
-#   define STM32_SRAM_END               ((void*)0x20008000)
-#   define STM32_HIGH_DENSITY // 64pin package
+/*
+ * STM32F301xx
+ */
 
-#elif defined(MCU_STM32F302VB)
-#   define STM32_F3_LINE                STM32_F3_LINE_302
-#   define STM32_NR_GPIO_PORTS          45
-#   define STM32_SRAM_END               ((void*)0x20008000)
-#   define STM32_XL_DENSITY // 100pin package
+// low density (32pin package)
+#if defined(MCU_STM32F301K6)
+#	define STM32_F3_LINE									STM32_F3_LINE_301
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_LOW_DENSITY
+
+#elif defined(MCU_STM32F301K8)
+#	define STM32_F3_LINE									STM32_F3_LINE_301
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_LOW_DENSITY
+
+// medium density (48pin package)
+#elif defined(MCU_STM32F301C6)
+#	define STM32_F3_LINE									STM32_F3_LINE_301
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_MEDIUM_DENSITY
+
+#elif defined(MCU_STM32F301C8)
+#	define STM32_F3_LINE									STM32_F3_LINE_301
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_MEDIUM_DENSITY
+
+// high density (64pin package)
+#elif defined(MCU_STM32F301R6)
+#	define STM32_F3_LINE									STM32_F3_LINE_301
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_HIGH_DENSITY
+
+#elif defined(MCU_STM32F301R8)
+#	define STM32_F3_LINE									STM32_F3_LINE_301
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_HIGH_DENSITY
+
+/*
+ * STM32F302xx
+ */
+
+// low density (32pin package)
+#elif defined(MCU_STM32F302K6)
+#	define STM32_F3_LINE									STM32_F3_LINE_302
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_LOW_DENSITY
+
+#elif defined(MCU_STM32F302K8)
+#	define STM32_F3_LINE									STM32_F3_LINE_302
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_LOW_DENSITY
+
+// medium density (48pin package)
+#elif defined(MCU_STM32F302C6)
+#	define STM32_F3_LINE									STM32_F3_LINE_302
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_MEDIUM_DENSITY
+
+#elif defined(MCU_STM32F302C8)
+#	define STM32_F3_LINE									STM32_F3_LINE_302
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_MEDIUM_DENSITY
+
+#elif defined(MCU_STM32F302CB)
+#	define STM32_F3_LINE                	STM32_F3_LINE_302
+#	define STM32_SRAM_END               	SRAND_END_32K
+#	define STM32_MEDIUM_DENSITY
 
 #elif defined(MCU_STM32F302CC)
-#   define STM32_F3_LINE                STM32_F3_LINE_302
-#   define STM32_NR_GPIO_PORTS          20
-#   define STM32_SRAM_END               ((void*)0x2000A000)
-#   define STM32_MEDIUM_DENSITY // 48pin package
+#	define STM32_F3_LINE                	STM32_F3_LINE_302
+#	define STM32_SRAM_END               	SRAND_END_40K
+#	define STM32_MEDIUM_DENSITY
+
+// high density (64pin package)
+#elif defined(MCU_STM32F302R6)
+#	define STM32_F3_LINE									STM32_F3_LINE_302
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_HIGH_DENSITY
+
+#elif defined(MCU_STM32F302R8)
+#	define STM32_F3_LINE									STM32_F3_LINE_302
+#	define STM32_SRAM_END									SRAND_END_16K
+#	define STM32_HIGH_DENSITY
+
+#elif defined(MCU_STM32F302RB)
+#	define STM32_F3_LINE                	STM32_F3_LINE_302
+#	define STM32_SRAM_END               	SRAND_END_32K
+#	define STM32_HIGH_DENSITY
 
 #elif defined(MCU_STM32F302RC)
-#   define STM32_F3_LINE                STM32_F3_LINE_302
-#   define STM32_NR_GPIO_PORTS          27
-#   define STM32_SRAM_END               ((void*)0x2000A000)
-#   define STM32_HIGH_DENSITY // 64pin package
+#	define STM32_F3_LINE                	STM32_F3_LINE_302
+#	define STM32_SRAM_END               	SRAND_END_40K
+#	define STM32_HIGH_DENSITY
+
+// xl density (100pin package)
+#elif defined(MCU_STM32F302VB)
+#	define STM32_F3_LINE                	STM32_F3_LINE_302
+#	define STM32_SRAM_END               	SRAND_END_32K
+#	define STM32_XL_DENSITY
 
 #elif defined(MCU_STM32F302VC)
-#   define STM32_F3_LINE                STM32_F3_LINE_302
-#   define STM32_NR_GPIO_PORTS          45
-#   define STM32_SRAM_END               ((void*)0x2000A000)
-#   define STM32_XL_DENSITY // 100pin package
+#	define STM32_F3_LINE                	STM32_F3_LINE_302
+#	define STM32_SRAM_END               	SRAND_END_40K
+#	define STM32_XL_DENSITY
+
+/*
+ * STM32F303xx
+ */
+
+// low density (32pin package)
+#elif defined(MCU_STM32F303K6)
+#	define STM32_F3_LINE									STM32_F3_LINE_303
+#	define STM32_SRAM_END									SRAND_END_12K
+#	define STM32_LOW_DENSITY
+
+#elif defined(MCU_STM32F303K8)
+#	define STM32_F3_LINE									STM32_F3_LINE_303
+#	define STM32_SRAM_END									SRAND_END_12K
+#	define STM32_LOW_DENSITY
+
+// medium density (48pin package)
+#elif defined(MCU_STM32F303C6)
+#	define STM32_F3_LINE									STM32_F3_LINE_303
+#	define STM32_SRAM_END									SRAND_END_12K
+#	define STM32_MEDIUM_DENSITY
+
+#elif defined(MCU_STM32F303C8)
+#	define STM32_F3_LINE									STM32_F3_LINE_303
+#	define STM32_SRAM_END									SRAND_END_12K
+#	define STM32_MEDIUM_DENSITY
 
 #elif defined(MCU_STM32F303CB)
-#   define STM32_F3_LINE                STM32_F3_LINE_303
-#   define STM32_NR_GPIO_PORTS          20
-#   define STM32_SRAM_END               ((void*)0x2000A000)
-#   define STM32_MEDIUM_DENSITY // 48pin package
-
-#elif defined(MCU_STM32F303RB)
-#   define STM32_F3_LINE                STM32_F3_LINE_303
-#   define STM32_NR_GPIO_PORTS          27
-#   define STM32_SRAM_END               ((void*)0x2000A000)
-#   define STM32_HIGH_DENSITY // 64pin package
-
-#elif defined(MCU_STM32F303VB)
-#   define STM32_F3_LINE                STM32_F3_LINE_303
-#   define STM32_NR_GPIO_PORTS          45
-#   define STM32_SRAM_END               ((void*)0x2000A000)
-#   define STM32_XL_DENSITY // 100pin package
+#	define STM32_F3_LINE                	STM32_F3_LINE_303
+#	define STM32_SRAM_END               	SRAND_END_32K
+#	define STM32_MEDIUM_DENSITY
 
 #elif defined(MCU_STM32F303CC)
-#   define STM32_F3_LINE                STM32_F3_LINE_303
-#   define STM32_NR_GPIO_PORTS          20
-#   define STM32_SRAM_END               ((void*)0x2000C000)
-#   define STM32_MEDIUM_DENSITY // 48pin package
+#	define STM32_F3_LINE                	STM32_F3_LINE_303
+#	define STM32_SRAM_END               	SRAND_END_40K
+#	define STM32_MEDIUM_DENSITY
+
+// high density (64pin package)
+#elif defined(MCU_STM32F303R6)
+#	define STM32_F3_LINE									STM32_F3_LINE_303
+#	define STM32_SRAM_END									SRAND_END_12K
+#	define STM32_HIGH_DENSITY
+
+#elif defined(MCU_STM32F303R8)
+#	define STM32_F3_LINE									STM32_F3_LINE_303
+#	define STM32_SRAM_END									SRAND_END_12K
+#	define STM32_HIGH_DENSITY
+
+#elif defined(MCU_STM32F303RB)
+#	define STM32_F3_LINE                	STM32_F3_LINE_303
+#	define STM32_SRAM_END               	SRAND_END_32K
+#	define STM32_HIGH_DENSITY
 
 #elif defined(MCU_STM32F303RC)
-#   define STM32_F3_LINE                STM32_F3_LINE_303
-#   define STM32_NR_GPIO_PORTS          27
-#   define STM32_SRAM_END               ((void*)0x2000C000)
-#   define STM32_HIGH_DENSITY // 64pin package
+#	define STM32_F3_LINE                	STM32_F3_LINE_303
+#	define STM32_SRAM_END               	SRAND_END_40K
+#	define STM32_HIGH_DENSITY
+
+// xl density (100pin package)
+#elif defined(MCU_STM32F303VB)
+#	define STM32_F3_LINE                	STM32_F3_LINE_303
+#	define STM32_SRAM_END               	SRAND_END_32K
+#	define STM32_XL_DENSITY
 
 #elif defined(MCU_STM32F303VC)
-#   define STM32_F3_LINE                STM32_F3_LINE_303
-#   define STM32_NR_GPIO_PORTS          45
-#   define STM32_SRAM_END               ((void*)0x2000C000)
-#   define STM32_XL_DENSITY // 100pin package
+#	define STM32_F3_LINE                	STM32_F3_LINE_303
+#	define STM32_SRAM_END               	SRAND_END_40K
+#	define STM32_XL_DENSITY
 
 #else
-#warning "Unsupported or unspecified STM32F3 MCU."
+#	warning																"Unsupported or unspecified STM32F3 MCU."
 #endif
 
 /*
  * Derived values.
  */
 
-#if STM32_F3_LINE == STM32_F3_LINE_302
-#    define STM32_HAVE_USB              1
+#define STM32_HAVE_USB									1
+#define STM32_NR_INTERRUPTS							82
+#define STM32_HAVE_FSMC									0
+#define STM32_HAVE_DAC									1
 
-#    ifdef STM32_MEDIUM_DENSITY
-#       define STM32_NR_INTERRUPTS      82
-#       define STM32_TIMER_MASK         0b111000000001011110
-#       define STM32_HAVE_FSMC          0
-#       define STM32_HAVE_DAC           1
-#    elif defined(STM32_HIGH_DENSITY)
-#       define STM32_NR_INTERRUPTS      82
-#       define STM32_TIMER_MASK         0b111000000001011110
-#       define STM32_HAVE_FSMC          0
-#       define STM32_HAVE_DAC           1
-#    elif defined(STM32_XL_DENSITY)
-#       define STM32_NR_INTERRUPTS      82
-#       define STM32_TIMER_MASK         0b111000000001011110
-#       define STM32_HAVE_FSMC          0
-#       define STM32_HAVE_DAC           1
-#    endif
+#if STM32_F3_LINE == STM32_F3_LINE_301
+#	define STM32_TIMER_MASK								0b111000000001000110	// 1, 2, 6, 15, 16, 17
+
+#elif STM32_F3_LINE == STM32_F3_LINE_302
+#	if defined(MCU_STM32F302K6) || defined(MCU_STM32F302K8) || defined(MCU_STM32F302C6) || defined(MCU_STM32F302C8) || defined(MCU_STM32F302R6) || defined(MCU_STM32F302R8)
+#		define STM32_TIMER_MASK         		0b111000000001000110 // 1, 2, 6, 15, 16, 17
+#	else
+#		define STM32_TIMER_MASK							0b111000000001011110 // 1, 2, 3, 4, 6, 15, 16, 17
+#	endif
 
 #elif STM32_F3_LINE == STM32_F3_LINE_303
-#    define STM32_HAVE_USB              1
-
-#    ifdef STM32_MEDIUM_DENSITY
-#       define STM32_NR_INTERRUPTS      82
-#       define STM32_TIMER_MASK         0b111000000111011110
-#       define STM32_HAVE_FSMC          0
-#       define STM32_HAVE_DAC           1
-#    elif defined(STM32_HIGH_DENSITY)
-#       define STM32_NR_INTERRUPTS      82
-#       define STM32_TIMER_MASK         0b111000000111011110
-#       define STM32_HAVE_FSMC          0
-#       define STM32_HAVE_DAC           1
-#    elif defined(STM32_XL_DENSITY)
-#       define STM32_NR_INTERRUPTS      82
-#       define STM32_TIMER_MASK         0b111000000111011110
-#       define STM32_HAVE_FSMC          0
-#       define STM32_HAVE_DAC           1
-#    endif
-
+#	if defined(MCU_STM32F303K6) || defined(MCU_STM32F303K8) || defined(MCU_STM32F303C6) || defined(MCU_STM32F303C8) || defined(MCU_STM32F303R6) || defined(MCU_STM32F303R8)
+#		define STM32_TIMER_MASK         		0b111000000011001110 // 1, 2, 3, 6, 7, 15, 16, 17
+#	else
+#		define STM32_TIMER_MASK							0b111000000111011110 // 1, 2, 3, 4, 6, 7, 8, 15, 16, 17
+#	endif
 #endif
 
 /*
@@ -194,15 +283,19 @@ extern "C" {
  */
 
 #ifndef STM32_PCLK1
-#define STM32_PCLK1                     36000000U
+#	define STM32_PCLK1                    36000000U
 #endif
 
 #ifndef STM32_PCLK2
-#define STM32_PCLK2                     72000000U
+#	define STM32_PCLK2                    72000000U
 #endif
 
 #ifndef STM32_DELAY_US_MULT
-#define STM32_DELAY_US_MULT             12 /* FIXME: value is incorrect. */
+#	define STM32_DELAY_US_MULT            12 /* FIXME: value is incorrect. */
+#endif
+
+#ifndef STM32_NR_GPIO_PORTS
+#	define STM32_NR_GPIO_PORTS          	100
 #endif
 
 /*
