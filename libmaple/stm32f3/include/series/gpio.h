@@ -201,23 +201,6 @@ void gpio_set_modef(struct gpio_dev *dev,
                     unsigned flags);
 
 /**
- * @brief Set the mode of a GPIO pin.
- *
- * Calling this function is equivalent to calling gpio_set_modef(dev,
- * pin, mode, GPIO_MODE_SPEED_HIGH). Note that this overrides the
- * default speed.
- *
- * @param dev GPIO device.
- * @param bit Bit on the device whose mode to set, 0--15.
- * @param mode Mode to set the pin to.
- */
-static inline void gpio_set_mode(struct gpio_dev *dev,
-                                 uint8 bit,
-                                 gpio_pin_mode mode) {
-    gpio_set_modef(dev, bit, mode, GPIO_MODEF_SPEED_HIGH);
-}
-
-/**
  * @brief GPIO alternate functions.
  * Use these to select an alternate function for a pin.
  * @see gpio_set_af()

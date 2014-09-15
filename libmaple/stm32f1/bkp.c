@@ -49,7 +49,7 @@ void bkp_init(void) {
  */
 #define NR_LOW_DRS 10
 
-inline __io uint32* bkp_data_register(uint8 reg) {
+inline uint32* bkp_data_register(uint8 reg) {
     if (reg < 1 || reg > BKP_NR_DATA_REGS) {
         return 0;
     }

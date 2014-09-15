@@ -157,14 +157,14 @@ rcc_clk_domain rcc_dev_clk(rcc_clk_id id);
 /**
  * @brief Enable the clock security system (CSS).
  */
-static inline void rcc_enable_css() {
+static inline void rcc_enable_css(void) {
     RCC_BASE->CR |= RCC_CR_CSSON;
 }
 
 /**
  * @brief Disable the clock security system (CSS).
  */
-static inline void rcc_disable_css() {
+static inline void rcc_disable_css(void) {
     RCC_BASE->CR &= ~RCC_CR_CSSON;
 }
 

@@ -302,6 +302,7 @@ typedef enum i2c_timing {
  */
 
 static inline uint32 _i2c_bus_clk(i2c_dev *dev) { /* FIXME remove, is a remainder of F1 code */
+		(void)dev;
     /* Both I2C peripherals are on APB1 */
     return STM32_PCLK1 / (1000 * 1000);
 }

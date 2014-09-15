@@ -97,24 +97,25 @@ typedef struct nvic_reg_map {
  * place the include here to give the series header access to
  * NVIC_BASE, in order to let it do so).
  */
+
 #include <series/nvic.h>
 
 void nvic_init(uint32 address, uint32 offset);
 void nvic_set_vector_table(uint32 address, uint32 offset);
 void nvic_irq_set_priority(nvic_irq_num irqn, uint8 priority);
-void nvic_sys_reset();
+void nvic_sys_reset(void);
 
 /**
  * Enables interrupts and configurable fault handlers (clear PRIMASK).
  */
-static inline __always_inline void nvic_globalirq_enable() {
+static inline __always_inline void nvic_globalirq_enable(void) {
     asm volatile("cpsie i");
 }
 
 /**
  * Disable interrupts and configurable fault handlers (set PRIMASK).
  */
-static inline __always_inline void nvic_globalirq_disable() {
+static inline __always_inline void nvic_globalirq_disable(void) {
     asm volatile("cpsid i");
 }
 
