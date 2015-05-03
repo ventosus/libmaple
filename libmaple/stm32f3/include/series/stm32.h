@@ -38,10 +38,6 @@
 extern "C" {
 #endif
 
-#define __CCM_TEXT__ __attribute__((section(".ccm.text")))
-#define __CCM_DATA__ __attribute__((section(".ccm.data")))
-#define __CCM_BSS__ __attribute__((section(".ccm.bss")))
-
 #define STM32_MCU_SERIES                STM32_SERIES_F3
 
 /* The STM32F3 series is subdivided into "lines". libmaple currently
@@ -258,9 +254,15 @@ extern "C" {
 #define STM32_HAVE_DAC									1
 
 #if STM32_F3_LINE == STM32_F3_LINE_301
+#	define __CCM_TEXT__
+#	define __CCM_DATA__
+#	define __CCM_BSS__
 #	define STM32_TIMER_MASK								0b111000000001000110	// 1, 2, 6, 15, 16, 17
 
 #elif STM32_F3_LINE == STM32_F3_LINE_302
+#	define __CCM_TEXT__
+#	define __CCM_DATA__
+#	define __CCM_BSS__
 #	if defined(MCU_STM32F302K6) || defined(MCU_STM32F302K8) || defined(MCU_STM32F302C6) || defined(MCU_STM32F302C8) || defined(MCU_STM32F302R6) || defined(MCU_STM32F302R8)
 #		define STM32_TIMER_MASK         		0b111000000001000110 // 1, 2, 6, 15, 16, 17
 #	else
@@ -268,6 +270,9 @@ extern "C" {
 #	endif
 
 #elif STM32_F3_LINE == STM32_F3_LINE_303
+#	define __CCM_TEXT__ __attribute__((section(".ccm.text")))
+#	define __CCM_DATA__ __attribute__((section(".ccm.data")))
+#	define __CCM_BSS__ __attribute__((section(".ccm.bss")))
 #	if defined(MCU_STM32F303K6) || defined(MCU_STM32F303K8) || defined(MCU_STM32F303C6) || defined(MCU_STM32F303C8) || defined(MCU_STM32F303R6) || defined(MCU_STM32F303R8)
 #		define STM32_TIMER_MASK         		0b111000000011001110 // 1, 2, 3, 6, 7, 15, 16, 17
 #	else
